@@ -20,10 +20,17 @@ import {
 } from "./stores";
 import { getSettings, getCalendars, getAccounts } from "./lib/tauri";
 import { listen } from "@tauri-apps/api/event";
+import { initTheme, useThemeHotReload } from "./lib/theme";
 import type { Settings } from "./types";
 
 function App() {
+  // Enable theme hot reload from config changes
+  useThemeHotReload();
+
   onMount(async () => {
+    // Initialize theme system
+    initTheme();
+
     // Load initial data
     try {
       const [loadedSettings, loadedCalendars, loadedAccounts] =
