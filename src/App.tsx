@@ -6,6 +6,7 @@ import { CalendarLayout } from "./components/Calendar/CalendarLayout";
 import { EventModal } from "./components/Events/EventModal";
 import { CommandPalette } from "./components/CommandPalette/CommandPalette";
 import { SettingsModal } from "./components/Settings/SettingsModal";
+import { AccountModal } from "./components/Accounts/AccountModal";
 import {
   settings,
   calendars,
@@ -186,6 +187,7 @@ function App() {
       <EventModal />
       <CommandPalette />
       <SettingsModal />
+      <AccountModal />
     </div>
   );
 }
