@@ -3,6 +3,7 @@ import { css } from "../styled-system/css";
 import { Header } from "./components/Layout/Header";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { CalendarLayout } from "./components/Calendar/CalendarLayout";
+import { EventModal } from "./components/Events/EventModal";
 import {
   settings,
   calendars,
@@ -178,6 +179,9 @@ function App() {
         <Sidebar />
         <CalendarLayout />
       </div>
+
+      {/* Modals */}
+      <EventModal />
     </div>
   );
 }
