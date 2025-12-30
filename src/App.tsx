@@ -4,6 +4,7 @@ import { Header } from "./components/Layout/Header";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { CalendarLayout } from "./components/Calendar/CalendarLayout";
 import { EventModal } from "./components/Events/EventModal";
+import { CommandPalette } from "./components/CommandPalette/CommandPalette";
 import {
   settings,
   calendars,
@@ -182,6 +183,7 @@ function App() {
 
       {/* Modals */}
       <EventModal />
+      <CommandPalette />
     </div>
   );
 }
