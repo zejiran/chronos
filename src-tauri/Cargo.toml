@@ -1,0 +1,40 @@
+[package]
+name = "chronos"
+version = "1.0.0"
+description = "A beautiful, performant calendar application"
+authors = ["Juan Alegría"]
+license = "MIT"
+repository = "https://github.com/zejiran/chronos"
+edition = "2021"
+
+[lib]
+name = "chronos_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+tauri-plugin-notification = "2"
+tauri-plugin-deep-link = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.12", features = ["json", "rustls-tls"] }
+oauth2 = "4.4"
+keyring = { version = "3", features = ["apple-native", "windows-native", "sync-secret-service"] }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+dirs = "5"
+notify = "7"
+open = "5"
+thiserror = "2"
+anyhow = "1"
+regex = "1"
+log = "0.4"
+env_logger = "0.11"
+icalendar = "0.16"
+urlencoding = "2"
