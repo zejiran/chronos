@@ -5,6 +5,7 @@ import { Sidebar } from "./components/Sidebar/Sidebar";
 import { CalendarLayout } from "./components/Calendar/CalendarLayout";
 import { EventModal } from "./components/Events/EventModal";
 import { CommandPalette } from "./components/CommandPalette/CommandPalette";
+import { SettingsModal } from "./components/Settings/SettingsModal";
 import {
   settings,
   calendars,
@@ -184,6 +185,7 @@ function App() {
       {/* Modals */}
       <EventModal />
       <CommandPalette />
+      <SettingsModal />
     </div>
   );
 }
