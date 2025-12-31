@@ -146,9 +146,17 @@ function App() {
             commandPaletteOpen.set(true);
             break;
           case "escape":
-            commandPaletteOpen.set(false);
-            eventModalOpen.set(false);
-            settingsModalOpen.set(false);
+            // Only close modals if one is actually open, don't affect fullscreen
+            if (
+              commandPaletteOpen.get() ||
+              eventModalOpen.get() ||
+              settingsModalOpen.get()
+            ) {
+              e.preventDefault();
+              commandPaletteOpen.set(false);
+              eventModalOpen.set(false);
+              settingsModalOpen.set(false);
+            }
             break;
         }
       }
