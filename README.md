@@ -178,7 +178,10 @@ VITE_MICROSOFT_CLIENT_SECRET=your-microsoft-client-secret
 
 ## License
 
-GPL-3.0 License - see [LICENSE](LICENSE) for details.
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0)
+
+- **[GPL-3.0 license](LICENSE)**
+- Copyright 2024 © Juan Alegría.
 
 ## Contributing
 
