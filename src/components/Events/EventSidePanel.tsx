@@ -125,13 +125,15 @@ export function EventSidePanel(props: EventSidePanelProps) {
     setIsSubmitting(true);
     try {
       const data = formData();
+      // Build ISO 8601 timestamps with UTC timezone for Rust chrono parsing
       const startDateTime = data.isAllDay
-        ? `${data.startDate}T00:00:00`
-        : `${data.startDate}T${data.startTime}:00`;
+        ? `${data.startDate}T00:00:00Z`
+        : `${data.startDate}T${data.startTime}:00Z`;
       const endDateTime = data.isAllDay
-        ? `${data.endDate}T23:59:59`
-        : `${data.endDate}T${data.endTime}:00`;
+        ? `${data.endDate}T23:59:59Z`
+        : `${data.endDate}T${data.endTime}:00Z`;
 
+      // Build request matching CreateEventRequest struct
       const eventData = {
         calendarId: data.calendarId,
         title: data.title,
@@ -139,13 +141,13 @@ export function EventSidePanel(props: EventSidePanelProps) {
         location: data.location || undefined,
         startTime: startDateTime,
         endTime: endDateTime,
-        isAllDay: data.isAllDay,
+        allDay: data.isAllDay,
         color: data.color,
-        reminderMinutes: data.reminderMinutes,
-        recurrence: data.recurrence,
-        meetingUrl: data.meetingUrl || undefined,
-        status: "confirmed" as const,
-        syncStatus: "pending" as const,
+        reminders: data.reminderMinutes ? [data.reminderMinutes] : undefined,
+        recurrenceRule: data.recurrence
+          ? `FREQ=${data.recurrence.frequency.toUpperCase()};INTERVAL=${data.recurrence.interval}`
+          : undefined,
+        videoLink: data.meetingUrl || undefined,
       };
 
       if (isEditing()) {
@@ -155,12 +157,12 @@ export function EventSidePanel(props: EventSidePanelProps) {
           location: eventData.location,
           startTime: eventData.startTime,
           endTime: eventData.endTime,
-          allDay: eventData.isAllDay,
+          allDay: eventData.allDay,
           color: eventData.color,
         });
         updateEvent(props.existingEvent!.id, updated as unknown as CalendarEvent);
       } else {
-        const created = await createEvent(eventData as any);
+        const created = await createEvent(eventData);
         addEvent(created as unknown as CalendarEvent);
       }
       props.onClose();
