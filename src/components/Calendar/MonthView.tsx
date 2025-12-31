@@ -7,6 +7,8 @@ import {
   calendars,
   eventModalOpen,
   selectedEventId,
+  eventSidePanelOpen,
+  eventSidePanelData,
 } from "../../stores";
 import {
   getCalendarDays,
@@ -49,7 +51,17 @@ export function MonthView() {
           const eventStart = Temporal.PlainDateTime.from(
             event.startTime.replace("Z", ""),
           );
-          return eventStart.toPlainDate().equals(date);
+          const eventEnd = Temporal.PlainDateTime.from(
+            event.endTime.replace("Z", ""),
+          );
+          const eventStartDate = eventStart.toPlainDate();
+          const eventEndDate = eventEnd.toPlainDate();
+
+          // Include event if date falls within the event's date range
+          return (
+            Temporal.PlainDate.compare(date, eventStartDate) >= 0 &&
+            Temporal.PlainDate.compare(date, eventEndDate) <= 0
+          );
         } catch {
           return false;
         }
@@ -61,8 +73,64 @@ export function MonthView() {
       });
   };
 
-  const handleDayClick = (date: Temporal.PlainDate) => {
-    selectedDate.set(date.toString());
+  // Helper to check if event starts on this date
+  const eventStartsOnDate = (
+    event: CalendarEvent,
+    date: Temporal.PlainDate,
+  ): boolean => {
+    try {
+      const eventStart = Temporal.PlainDateTime.from(
+        event.startTime.replace("Z", ""),
+      );
+      return eventStart.toPlainDate().equals(date);
+    } catch {
+      return false;
+    }
+  };
+
+  // Helper to check if event continues from previous day
+  const eventContinuesOnDate = (
+    event: CalendarEvent,
+    date: Temporal.PlainDate,
+  ): boolean => {
+    try {
+      const eventStart = Temporal.PlainDateTime.from(
+        event.startTime.replace("Z", ""),
+      );
+      const eventEnd = Temporal.PlainDateTime.from(
+        event.endTime.replace("Z", ""),
+      );
+      const eventStartDate = eventStart.toPlainDate();
+      const eventEndDate = eventEnd.toPlainDate();
+
+      return (
+        Temporal.PlainDate.compare(date, eventStartDate) > 0 &&
+        Temporal.PlainDate.compare(date, eventEndDate) <= 0
+      );
+    } catch {
+      return false;
+    }
+  };
+
+  const handleDayClick = (date: Temporal.PlainDate, e: MouseEvent) => {
+    // Check if clicked on empty space (not an event)
+    const target = e.target as HTMLElement;
+    const clickedOnEvent = target.closest('[data-event-item="true"]');
+
+    if (!clickedOnEvent) {
+      // Open side panel for creating a new event
+      eventSidePanelData.set({
+        startDate: date.toString(),
+        startTime: "09:00",
+        endDate: date.toString(),
+        endTime: "10:00",
+        isAllDay: false,
+      });
+      eventSidePanelOpen.set(true);
+    } else {
+      // Just update selected date if clicking on an event
+      selectedDate.set(date.toString());
+    }
   };
 
   const handleEventClick = (event: CalendarEvent, e: MouseEvent) => {
@@ -169,7 +237,7 @@ export function MonthView() {
                     paddingRight: "6px",
                   },
                 })}
-                onClick={() => handleDayClick(date)}
+                onClick={(e: MouseEvent) => handleDayClick(date, e)}
               >
                 {/* Day number */}
                 <div
@@ -193,9 +261,9 @@ export function MonthView() {
                       fontWeight: isTodayDate ? "700" : "500",
                       borderRadius: "8px",
                       transition: "all 150ms",
-                      backgroundColor: isTodayDate ? "primary" : "transparent",
+                      backgroundColor: isTodayDate ? "accent" : "transparent",
                       color: isTodayDate
-                        ? "background"
+                        ? "white"
                         : isCurrentMonth
                           ? "foreground"
                           : "mutedHover",
@@ -205,6 +273,10 @@ export function MonthView() {
                         fontSize: "11px",
                       },
                     })}
+                    onClick={(e: MouseEvent) => {
+                      e.stopPropagation();
+                      handleDayClick(date, e);
+                    }}
                   >
                     {date.day}
                   </span>
@@ -223,60 +295,75 @@ export function MonthView() {
                     },
                   })}
                 >
-                  <For each={dayEvents().slice(0, 3)}>
-                    {(event) => (
-                      <div
-                        class={css({
-                          fontSize: "11px",
-                          fontWeight: "500",
-                          paddingTop: "5px",
-                          paddingBottom: "5px",
-                          paddingLeft: "7px",
-                          paddingRight: "7px",
-                          borderRadius: "5px",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                          cursor: "pointer",
-                          transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
-                          minWidth: 0,
-                          "@media (max-width: 768px)": {
-                            fontSize: "9px",
-                            paddingTop: "3px",
-                            paddingBottom: "3px",
-                            paddingLeft: "5px",
-                            paddingRight: "5px",
-                          },
-                          _hover: {
-                            opacity: 0.8,
-                          },
-                          _active: {
-                            transform: "scale(0.98)",
-                          },
-                        })}
-                        style={{
-                          "background-color":
-                            event.color || "var(--colors-primary)",
-                          color: "white",
-                        }}
-                        onClick={(e) => handleEventClick(event, e)}
-                      >
-                        <Show when={!event.isAllDay}>
-                          <span
-                            class={css({
-                              marginRight: "4px",
-                              opacity: 0.9,
-                              fontWeight: "600",
-                            })}
-                          >
-                            {formatTime(event.startTime, "12h")
-                              .replace(" AM", "a")
-                              .replace(" PM", "p")}
-                          </span>
-                        </Show>
-                        {event.title}
-                      </div>
-                    )}
+                  <For
+                    each={dayEvents()
+                      .filter((event) => eventStartsOnDate(event, date))
+                      .slice(0, 3)}
+                  >
+                    {(event) => {
+                      const continuesFromPrevious = eventContinuesOnDate(
+                        event,
+                        date,
+                      );
+                      const startsOnDate = eventStartsOnDate(event, date);
+
+                      return (
+                        <div
+                          data-event-item="true"
+                          class={css({
+                            fontSize: "11px",
+                            fontWeight: "500",
+                            paddingTop: "5px",
+                            paddingBottom: "5px",
+                            paddingLeft: "7px",
+                            paddingRight: "7px",
+                            borderRadius: startsOnDate ? "5px" : "5px 0 0 5px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            cursor: "pointer",
+                            transition:
+                              "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+                            minWidth: 0,
+                            "@media (max-width: 768px)": {
+                              fontSize: "9px",
+                              paddingTop: "3px",
+                              paddingBottom: "3px",
+                              paddingLeft: "5px",
+                              paddingRight: "5px",
+                            },
+                            _hover: {
+                              opacity: 0.8,
+                            },
+                            _active: {
+                              transform: "scale(0.98)",
+                            },
+                          })}
+                          style={{
+                            "background-color":
+                              event.color || "var(--colors-primary)",
+                            color: "white",
+                          }}
+                          onClick={(e) => handleEventClick(event, e)}
+                        >
+                          <Show when={!event.isAllDay && startsOnDate}>
+                            <span
+                              class={css({
+                                marginRight: "4px",
+                                opacity: 0.9,
+                                fontWeight: "600",
+                              })}
+                            >
+                              {formatTime(event.startTime, "12h")
+                                .replace(" AM", "a")
+                                .replace(" PM", "p")}
+                            </span>
+                          </Show>
+                          {continuesFromPrevious ? "↖ " : ""}
+                          {event.title}
+                        </div>
+                      );
+                    }}
                   </For>
                   <Show when={dayEvents().length > 3}>
                     <div

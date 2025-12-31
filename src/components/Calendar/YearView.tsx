@@ -160,22 +160,22 @@ function MiniMonth(props: {
                   borderRadius: "full",
                   cursor: "pointer",
                   backgroundColor: isTodayDate
-                    ? "primary"
+                    ? "accent"
                     : isSelected
-                      ? "accent"
+                      ? "primary"
                       : "transparent",
                   color:
                     isTodayDate || isSelected
-                      ? "background"
+                      ? "white"
                       : isCurrentMonth
                         ? "foreground"
                         : "transparent",
                   fontWeight: isTodayDate ? "bold" : "normal",
                   _hover: {
                     backgroundColor: isTodayDate
-                      ? "primaryHover"
+                      ? "accentHover"
                       : isSelected
-                        ? "accentHover"
+                        ? "primaryHover"
                         : "border",
                   },
                 })}

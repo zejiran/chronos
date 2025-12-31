@@ -1,4 +1,4 @@
-import { createMemo, For, Show } from "solid-js";
+import { createMemo, For, Show, createSignal, onCleanup } from "solid-js";
 import { useStore } from "@nanostores/solid";
 import { css } from "../../../styled-system/css";
 import { MapPin } from "lucide-solid";
@@ -8,6 +8,8 @@ import {
   calendars,
   eventModalOpen,
   selectedEventId,
+  eventSidePanelOpen,
+  eventSidePanelData,
 } from "../../stores";
 import { getHoursArray, formatTime, formatDate, isToday } from "../../lib/date";
 import { Temporal } from "@js-temporal/polyfill";
@@ -24,7 +26,35 @@ export function DayView() {
     Temporal.PlainDate.from($selectedDate()),
   );
 
-  const getEventsForHour = (hour: number): CalendarEvent[] => {
+  // Current time indicator
+  const [currentTime, setCurrentTime] = createSignal(new Date());
+  const updateInterval = setInterval(() => {
+    setCurrentTime(new Date());
+  }, 60000); // Update every minute
+
+  onCleanup(() => {
+    clearInterval(updateInterval);
+  });
+
+  const getCurrentTimePosition = (): number => {
+    const now = currentTime();
+    const minutes = now.getHours() * 60 + now.getMinutes();
+    return (minutes / 60) * HOUR_HEIGHT;
+  };
+
+  const isCurrentDay = (): boolean => {
+    const today = Temporal.Now.plainDateISO();
+    return currentDate().equals(today);
+  };
+
+  // Drag to create state
+  const [isDragging, setIsDragging] = createSignal(false);
+  const [dragStart, setDragStart] = createSignal<number | null>(null);
+  const [dragEnd, setDragEnd] = createSignal<number | null>(null);
+
+  const HOUR_HEIGHT = 60; // Height of each hour cell in pixels
+
+  const getEventsForDate = (): CalendarEvent[] => {
     const date = currentDate();
     const visibleCalendarIds = new Set(
       Object.values($calendars())
@@ -40,13 +70,37 @@ export function DayView() {
         const eventStart = Temporal.PlainDateTime.from(
           event.startTime.replace("Z", ""),
         );
-        return (
-          eventStart.toPlainDate().equals(date) && eventStart.hour === hour
-        );
+        return eventStart.toPlainDate().equals(date);
       } catch {
         return false;
       }
     });
+  };
+
+  const getEventPosition = (
+    event: CalendarEvent,
+  ): { top: number; height: number } => {
+    try {
+      const eventStart = Temporal.PlainDateTime.from(
+        event.startTime.replace("Z", ""),
+      );
+      const eventEnd = Temporal.PlainDateTime.from(
+        event.endTime.replace("Z", ""),
+      );
+
+      // Calculate top position based on start time
+      const startMinutes = eventStart.hour * 60 + eventStart.minute;
+      const top = (startMinutes / 60) * HOUR_HEIGHT;
+
+      // Calculate height based on duration
+      const endMinutes = eventEnd.hour * 60 + eventEnd.minute;
+      const durationMinutes = endMinutes - startMinutes;
+      const height = Math.max((durationMinutes / 60) * HOUR_HEIGHT, 20); // Minimum 20px height
+
+      return { top, height };
+    } catch {
+      return { top: 0, height: HOUR_HEIGHT };
+    }
   };
 
   const getAllDayEvents = (): CalendarEvent[] => {
@@ -76,6 +130,68 @@ export function DayView() {
     e.stopPropagation();
     selectedEventId.set(event.id);
     eventModalOpen.set(true);
+  };
+
+  const handleMouseDown = (hour: number) => {
+    setIsDragging(true);
+    setDragStart(hour);
+    setDragEnd(hour);
+  };
+
+  const handleMouseEnter = (hour: number) => {
+    if (isDragging()) {
+      setDragEnd(hour);
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (isDragging() && dragStart() !== null && dragEnd() !== null) {
+      const start = dragStart()!;
+      const end = dragEnd()!;
+
+      // Determine which is earlier
+      const startHour = Math.min(start, end);
+      const endHour = Math.max(start, end) + 1; // +1 for end time
+
+      // Format times
+      const startTime = `${startHour.toString().padStart(2, "0")}:00`;
+      const endTime = `${endHour.toString().padStart(2, "0")}:00`;
+
+      // Open side panel with the selected time range
+      eventSidePanelData.set({
+        startDate: currentDate().toString(),
+        startTime: startTime,
+        endDate: currentDate().toString(),
+        endTime: endTime,
+        isAllDay: false,
+      });
+      eventSidePanelOpen.set(true);
+    }
+
+    setIsDragging(false);
+    setDragStart(null);
+    setDragEnd(null);
+  };
+
+  // Global mouse up handler
+  onCleanup(() => {
+    document.removeEventListener("mouseup", handleMouseUp);
+  });
+
+  document.addEventListener("mouseup", handleMouseUp);
+
+  // Check if a cell is within the drag selection
+  const isCellInSelection = (hour: number): boolean => {
+    if (!isDragging() || dragStart() === null || dragEnd() === null)
+      return false;
+
+    const start = dragStart()!;
+    const end = dragEnd()!;
+
+    const minHour = Math.min(start, end);
+    const maxHour = Math.max(start, end);
+
+    return hour >= minHour && hour <= maxHour;
   };
 
   return (
@@ -108,8 +224,8 @@ export function DayView() {
             alignItems: "center",
             justifyContent: "center",
             borderRadius: "lg",
-            backgroundColor: isToday(currentDate()) ? "primary" : "background",
-            color: isToday(currentDate()) ? "background" : "foreground",
+            backgroundColor: isToday(currentDate()) ? "accent" : "background",
+            color: isToday(currentDate()) ? "white" : "foreground",
           })}
         >
           <span class={css({ fontSize: "xs", fontWeight: "medium" })}>
@@ -196,100 +312,166 @@ export function DayView() {
           },
         })}
       >
-        <For each={hours}>
-          {(hour) => {
-            const hourEvents = createMemo(() => getEventsForHour(hour));
+        <div class={css({ position: "relative" })}>
+          {/* Hour grid rows */}
+          <For each={hours}>
+            {(hour) => {
+              const isSelected = createMemo(() => isCellInSelection(hour));
 
-            return (
-              <div
-                class={css({
-                  display: "grid",
-                  gridTemplateColumns: "80px 1fr",
-                  minHeight: "60px",
-                  borderBottom: "1px solid {colors.border}",
-                })}
-              >
-                {/* Time label */}
+              return (
                 <div
                   class={css({
-                    fontSize: "sm",
-                    color: "mutedHover",
-                    textAlign: "right",
-                    paddingRight: "md",
-                    paddingTop: "xs",
-                    borderRight: "1px solid {colors.border}",
+                    display: "grid",
+                    gridTemplateColumns: "80px 1fr",
+                    minHeight: "60px",
+                    borderBottom: "1px solid {colors.border}",
                   })}
                 >
-                  {hour === 0
-                    ? "12 AM"
-                    : formatTime(
-                        `${hour.toString().padStart(2, "0")}:00`,
-                        "12h",
-                      )}
+                  {/* Time label */}
+                  <div
+                    class={css({
+                      fontSize: "sm",
+                      color: "mutedHover",
+                      textAlign: "right",
+                      paddingRight: "md",
+                      paddingTop: "xs",
+                      borderRight: "1px solid {colors.border}",
+                    })}
+                  >
+                    {hour === 0
+                      ? "12 AM"
+                      : formatTime(
+                          `${hour.toString().padStart(2, "0")}:00`,
+                          "12h",
+                        )}
+                  </div>
+
+                  {/* Events area */}
+                  <div
+                    class={css({
+                      padding: "xs",
+                      cursor: "pointer",
+                      transition: "background-color 150ms",
+                      _hover: {
+                        backgroundColor: "hover",
+                      },
+                    })}
+                    style={{
+                      "background-color": isSelected()
+                        ? "rgba(59, 130, 246, 0.15)"
+                        : undefined,
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      handleMouseDown(hour);
+                    }}
+                    onMouseEnter={() => handleMouseEnter(hour)}
+                  />
                 </div>
+              );
+            }}
+          </For>
 
-                {/* Events area */}
-                <div
-                  class={css({
-                    padding: "xs",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "xs",
-                    _hover: {
-                      backgroundColor: "hover",
-                    },
-                  })}
-                >
-                  <For each={hourEvents()}>
-                    {(event) => (
+          {/* Current time indicator line */}
+          <Show when={isCurrentDay()}>
+            <div
+              style={{
+                position: "absolute",
+                left: "80px",
+                right: 0,
+                height: "2px",
+                "background-color": "var(--colors-accent)",
+                "z-index": 10,
+                "pointer-events": "none",
+                top: `${getCurrentTimePosition()}px`,
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  left: "-6px",
+                  top: "-5px",
+                  width: "12px",
+                  height: "12px",
+                  "border-radius": "9999px",
+                  "background-color": "var(--colors-accent)",
+                }}
+              />
+            </div>
+          </Show>
+
+          {/* Events overlay - positioned absolutely over the grid */}
+          <div
+            class={css({
+              position: "absolute",
+              top: 0,
+              left: "80px",
+              right: 0,
+              bottom: 0,
+              pointerEvents: "none",
+            })}
+          >
+            <For each={getEventsForDate()}>
+              {(event) => {
+                const position = getEventPosition(event);
+                return (
+                  <div
+                    class={css({
+                      position: "absolute",
+                      left: "8px",
+                      right: "8px",
+                      padding: "sm md",
+                      borderRadius: "md",
+                      cursor: "pointer",
+                      borderLeft: "4px solid",
+                      pointerEvents: "auto",
+                      transition: "opacity 150ms",
+                      _hover: {
+                        opacity: 0.9,
+                      },
+                    })}
+                    style={{
+                      "background-color": `color-mix(in srgb, ${event.color || "var(--colors-primary)"} 20%, transparent)`,
+                      "border-left-color":
+                        event.color || "var(--colors-primary)",
+                      top: `${position.top}px`,
+                      height: `${position.height}px`,
+                    }}
+                    onClick={(e) => handleEventClick(event, e)}
+                  >
+                    <div
+                      class={css({
+                        fontSize: "sm",
+                        fontWeight: "medium",
+                        color: "foreground",
+                      })}
+                    >
+                      {event.title}
+                    </div>
+                    <div class={css({ fontSize: "xs", color: "mutedHover" })}>
+                      {formatTime(event.startTime, "12h")} -{" "}
+                      {formatTime(event.endTime, "12h")}
+                    </div>
+                    <Show when={event.location}>
                       <div
                         class={css({
-                          padding: "sm md",
-                          borderRadius: "md",
-                          cursor: "pointer",
-                          borderLeft: "4px solid",
+                          fontSize: "xs",
+                          color: "mutedHover",
+                          marginTop: "xs",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
                         })}
-                        style={{
-                          "background-color": `color-mix(in srgb, ${event.color || "var(--colors-primary)"} 20%, transparent)`,
-                          "border-left-color":
-                            event.color || "var(--colors-primary)",
-                        }}
-                        onClick={(e) => handleEventClick(event, e)}
                       >
-                        <div
-                          class={css({
-                            fontSize: "sm",
-                            fontWeight: "medium",
-                            color: "foreground",
-                          })}
-                        >
-                          {event.title}
-                        </div>
-                        <div
-                          class={css({ fontSize: "xs", color: "mutedHover" })}
-                        >
-                          {formatTime(event.startTime, "12h")} -{" "}
-                          {formatTime(event.endTime, "12h")}
-                        </div>
-                        <Show when={event.location}>
-                          <div
-                            class={css({
-                              fontSize: "xs",
-                              color: "mutedHover",
-                              marginTop: "xs",
-                            })}
-                          >
-                            <MapPin size={12} /> {event.location}
-                          </div>
-                        </Show>
+                        <MapPin size={12} /> {event.location}
                       </div>
-                    )}
-                  </For>
-                </div>
-              </div>
-            );
-          }}
-        </For>
+                    </Show>
+                  </div>
+                );
+              }}
+            </For>
+          </div>
+        </div>
       </div>
     </div>
   );

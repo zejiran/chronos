@@ -30,6 +30,27 @@ export function WeekView() {
 
   const hours = getHoursArray(0, 24);
 
+  // Current time indicator
+  const [currentTime, setCurrentTime] = createSignal(new Date());
+  const updateInterval = setInterval(() => {
+    setCurrentTime(new Date());
+  }, 60000); // Update every minute
+
+  onCleanup(() => {
+    clearInterval(updateInterval);
+  });
+
+  const getCurrentTimePosition = (): number => {
+    const now = currentTime();
+    const minutes = now.getHours() * 60 + now.getMinutes();
+    return (minutes / 60) * HOUR_HEIGHT;
+  };
+
+  const isCurrentWeek = (): boolean => {
+    const today = Temporal.Now.plainDateISO();
+    return weekDates().some((date) => date.equals(today));
+  };
+
   // Drag to create state
   const [isDragging, setIsDragging] = createSignal(false);
   const [dragStart, setDragStart] = createSignal<{
@@ -205,29 +226,29 @@ export function WeekView() {
         class={css({
           width: "72px",
           flexShrink: 0,
-          borderRight: "1px solid",
-          borderColor: "border",
           backgroundColor: "background",
           "@media (max-width: 768px)": {
             width: "56px",
           },
         })}
+        style={{
+          "border-right": "1px solid rgba(255, 255, 255, 0.05)",
+        }}
       >
         {/* Header spacer */}
         <div
           class={css({
             height: "96px",
-            borderBottom: "1px solid",
-            borderColor: "border",
             backgroundColor: "muted",
           })}
+          style={{
+            "border-bottom": "1px solid rgba(255, 255, 255, 0.05)",
+          }}
         />
         {/* All day spacer */}
         <div
           class={css({
             minHeight: "52px",
-            borderBottom: "1px solid",
-            borderColor: "border",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -245,6 +266,9 @@ export function WeekView() {
               paddingRight: "4px",
             },
           })}
+          style={{
+            "border-bottom": "1px solid rgba(255, 255, 255, 0.05)",
+          }}
         >
           All day
         </div>
@@ -255,8 +279,6 @@ export function WeekView() {
               <div
                 class={css({
                   height: "64px",
-                  borderBottom: "1px solid",
-                  borderColor: "border",
                   fontSize: "12px",
                   color: "mutedHover",
                   display: "flex",
@@ -270,6 +292,9 @@ export function WeekView() {
                     paddingRight: "6px",
                   },
                 })}
+                style={{
+                  "border-bottom": "1px solid rgba(255, 255, 255, 0.05)",
+                }}
               >
                 {hour === 0
                   ? ""
@@ -291,13 +316,12 @@ export function WeekView() {
         <div>
           {/* Header with day names */}
           <div
-            class={css({
+            style={{
               display: "grid",
-              gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
+              "grid-template-columns": "repeat(7, minmax(0, 1fr))",
               height: "96px",
-              borderBottom: "1px solid",
-              borderColor: "border",
-            })}
+              "border-bottom": "1px solid rgba(255, 255, 255, 0.05)",
+            }}
           >
             <Index each={weekDates()}>
               {(date, index) => {
@@ -323,8 +347,6 @@ export function WeekView() {
                       paddingBottom: "16px",
                       paddingLeft: "12px",
                       paddingRight: "12px",
-                      borderRight: "1px solid",
-                      borderColor: "border",
                       backgroundColor: "muted",
                       display: "flex",
                       flexDirection: "column",
@@ -332,7 +354,9 @@ export function WeekView() {
                       justifyContent: "center",
                     })}
                     style={{
-                      "border-right": isLastColumn ? "none" : undefined,
+                      "border-right": isLastColumn
+                        ? "none"
+                        : "1px solid rgba(255, 255, 255, 0.05)",
                     }}
                   >
                     <div
@@ -357,10 +381,8 @@ export function WeekView() {
                         fontSize: "18px",
                         fontWeight: isTodayDate ? "bold" : "medium",
                         borderRadius: "full",
-                        backgroundColor: isTodayDate
-                          ? "primary"
-                          : "transparent",
-                        color: isTodayDate ? "background" : "foreground",
+                        backgroundColor: isTodayDate ? "accent" : "transparent",
+                        color: isTodayDate ? "white" : "foreground",
                         "@media (max-width: 768px)": {
                           width: "28px",
                           height: "28px",
@@ -378,13 +400,12 @@ export function WeekView() {
 
           {/* All-day events row */}
           <div
-            class={css({
+            style={{
               display: "grid",
-              gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
-              borderBottom: "1px solid",
-              borderColor: "border",
-              minHeight: "52px",
-            })}
+              "grid-template-columns": "repeat(7, minmax(0, 1fr))",
+              "border-bottom": "1px solid rgba(255, 255, 255, 0.05)",
+              "min-height": "52px",
+            }}
           >
             <Index each={weekDates()}>
               {(date, index) => {
@@ -395,8 +416,6 @@ export function WeekView() {
                 return (
                   <div
                     class={css({
-                      borderRight: "1px solid",
-                      borderColor: "border",
                       paddingTop: "8px",
                       paddingBottom: "8px",
                       paddingLeft: "8px",
@@ -406,7 +425,9 @@ export function WeekView() {
                       gap: "4px",
                     })}
                     style={{
-                      "border-right": isLastColumn ? "none" : undefined,
+                      "border-right": isLastColumn
+                        ? "none"
+                        : "1px solid rgba(255, 255, 255, 0.05)",
                     }}
                   >
                     <For each={allDayEvents()}>
@@ -473,9 +494,6 @@ export function WeekView() {
                         <div
                           class={css({
                             height: "64px",
-                            borderRight: "1px solid",
-                            borderBottom: "1px solid",
-                            borderColor: "border",
                             position: "relative",
                             cursor: "pointer",
                             backgroundColor: "background",
@@ -485,7 +503,11 @@ export function WeekView() {
                             },
                           })}
                           style={{
-                            "border-right": isLastColumn ? "none" : undefined,
+                            "border-right": isLastColumn
+                              ? "none"
+                              : "1px solid rgba(255, 255, 255, 0.05)",
+                            "border-bottom":
+                              "1px solid rgba(255, 255, 255, 0.05)",
                             "background-color": isSelected()
                               ? "rgba(59, 130, 246, 0.15)"
                               : isTodayDate
@@ -507,6 +529,34 @@ export function WeekView() {
                 </div>
               )}
             </For>
+
+            {/* Current time indicator line */}
+            <Show when={isCurrentWeek()}>
+              <div
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  height: "2px",
+                  "background-color": "var(--colors-accent)",
+                  "z-index": 10,
+                  "pointer-events": "none",
+                  top: `${getCurrentTimePosition()}px`,
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    left: "-6px",
+                    top: "-5px",
+                    width: "12px",
+                    height: "12px",
+                    "border-radius": "9999px",
+                    "background-color": "var(--colors-accent)",
+                  }}
+                />
+              </div>
+            </Show>
 
             {/* Events overlay - positioned absolutely over the grid */}
             <div
@@ -531,11 +581,11 @@ export function WeekView() {
                     <div
                       class={css({
                         position: "relative",
-                        borderRight: "1px solid",
-                        borderColor: "transparent",
                       })}
                       style={{
-                        "border-right": isLastColumn ? "none" : undefined,
+                        "border-right": isLastColumn
+                          ? "none"
+                          : "1px solid transparent",
                       }}
                     >
                       <For each={dayEvents()}>

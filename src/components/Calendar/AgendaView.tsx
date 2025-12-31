@@ -142,8 +142,8 @@ export function AgendaView() {
                     alignItems: "center",
                     justifyContent: "center",
                     borderRadius: "lg",
-                    backgroundColor: isToday(day.date) ? "primary" : "muted",
-                    color: isToday(day.date) ? "background" : "foreground",
+                    backgroundColor: isToday(day.date) ? "accent" : "muted",
+                    color: isToday(day.date) ? "white" : "foreground",
                   })}
                 >
                   <span class={css({ fontSize: "xs", fontWeight: "medium" })}>
@@ -168,7 +168,7 @@ export function AgendaView() {
                     {formatDate(day.date, "long")}
                   </div>
                   <Show when={isToday(day.date)}>
-                    <div class={css({ fontSize: "sm", color: "primary" })}>
+                    <div class={css({ fontSize: "sm", color: "accent" })}>
                       Today
                     </div>
                   </Show>

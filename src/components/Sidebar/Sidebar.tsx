@@ -53,8 +53,6 @@ export function Sidebar() {
           width: "280px",
           height: "100%",
           backgroundColor: "sidebar",
-          borderRight: "1px solid",
-          borderColor: "border",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
@@ -72,6 +70,9 @@ export function Sidebar() {
             width: "280px",
           },
         })}
+        style={{
+          "border-right": "1px solid rgba(255, 255, 255, 0.05)",
+        }}
       >
         {/* Mini Calendar */}
         <div
@@ -92,9 +93,10 @@ export function Sidebar() {
             paddingBottom: "16px",
             paddingLeft: "16px",
             paddingRight: "16px",
-            borderTop: "1px solid",
-            borderColor: "border",
           })}
+          style={{
+            "border-top": "1px solid rgba(255, 255, 255, 0.05)",
+          }}
         >
           <div
             class={css({
@@ -233,8 +235,6 @@ export function Sidebar() {
             paddingBottom: "16px",
             paddingLeft: "16px",
             paddingRight: "16px",
-            borderTop: "1px solid",
-            borderColor: "border",
             overflow: "auto",
             "&::-webkit-scrollbar": {
               width: "6px",
@@ -247,6 +247,9 @@ export function Sidebar() {
               backgroundColor: "transparent",
             },
           })}
+          style={{
+            "border-top": "1px solid rgba(255, 255, 255, 0.05)",
+          }}
         >
           <h3
             class={css({
