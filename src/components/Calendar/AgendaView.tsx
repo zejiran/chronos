@@ -82,6 +82,9 @@ export function AgendaView() {
           backgroundColor: "border",
           borderRadius: "full",
         },
+        "@media (max-width: 768px)": {
+          padding: "md",
+        },
       })}
     >
       <div
@@ -179,6 +182,9 @@ export function AgendaView() {
                   flexDirection: "column",
                   gap: "sm",
                   paddingLeft: "64px",
+                  "@media (max-width: 768px)": {
+                    paddingLeft: "0px",
+                  },
                 })}
               >
                 <For each={day.events}>
@@ -209,6 +215,9 @@ export function AgendaView() {
                         class={css({
                           width: "80px",
                           flexShrink: 0,
+                          "@media (max-width: 768px)": {
+                            width: "60px",
+                          },
                         })}
                       >
                         <Show when={event.isAllDay}>
@@ -248,6 +257,12 @@ export function AgendaView() {
                             fontWeight: "medium",
                             color: "foreground",
                             marginBottom: "xs",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            "@media (max-width: 768px)": {
+                              fontSize: "sm",
+                            },
                           })}
                         >
                           {event.title}
@@ -260,9 +275,25 @@ export function AgendaView() {
                               display: "flex",
                               alignItems: "center",
                               gap: "xs",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              "@media (max-width: 768px)": {
+                                fontSize: "xs",
+                              },
                             })}
                           >
-                            <MapPin size={12} /> {event.location}
+                            <MapPin size={12} />
+                            <span
+                              class={css({
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                minWidth: 0,
+                              })}
+                            >
+                              {event.location}
+                            </span>
                           </div>
                         </Show>
                         <Show when={event.description}>
@@ -274,6 +305,9 @@ export function AgendaView() {
                               overflow: "hidden",
                               textOverflow: "ellipsis",
                               whiteSpace: "nowrap",
+                              "@media (max-width: 768px)": {
+                                fontSize: "xs",
+                              },
                             })}
                           >
                             {event.description}

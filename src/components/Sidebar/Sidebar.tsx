@@ -59,10 +59,29 @@ export function Sidebar() {
           flexDirection: "column",
           overflow: "hidden",
           flexShrink: 0,
+          "@media (max-width: 1024px)": {
+            width: "240px",
+          },
+          "@media (max-width: 768px)": {
+            position: "absolute",
+            left: 0,
+            top: 0,
+            bottom: 0,
+            zIndex: 1000,
+            boxShadow: "2px 0 8px rgba(0, 0, 0, 0.3)",
+            width: "280px",
+          },
         })}
       >
         {/* Mini Calendar */}
-        <div class={css({ paddingTop: "16px", paddingBottom: "16px", paddingLeft: "16px", paddingRight: "16px" })}>
+        <div
+          class={css({
+            paddingTop: "16px",
+            paddingBottom: "16px",
+            paddingLeft: "16px",
+            paddingRight: "16px",
+          })}
+        >
           <MiniCalendar />
         </div>
 
@@ -107,7 +126,10 @@ export function Sidebar() {
                 backgroundColor: "transparent",
                 border: "none",
                 cursor: "pointer",
-                paddingTop: "6px", paddingBottom: "6px", paddingLeft: "10px", paddingRight: "10px",
+                paddingTop: "6px",
+                paddingBottom: "6px",
+                paddingLeft: "10px",
+                paddingRight: "10px",
                 borderRadius: "6px",
                 transition: "all 150ms",
                 _hover: {
@@ -135,7 +157,10 @@ export function Sidebar() {
                     display: "flex",
                     alignItems: "center",
                     gap: "10px",
-                    paddingTop: "10px", paddingBottom: "10px", paddingLeft: "12px", paddingRight: "12px",
+                    paddingTop: "10px",
+                    paddingBottom: "10px",
+                    paddingLeft: "12px",
+                    paddingRight: "12px",
                     borderRadius: "6px",
                     cursor: "pointer",
                     transition: "all 150ms",
@@ -184,7 +209,10 @@ export function Sidebar() {
                   fontSize: "13px",
                   color: "mutedHover",
                   textAlign: "center",
-                  paddingTop: "24px", paddingBottom: "24px", paddingLeft: "16px", paddingRight: "16px",
+                  paddingTop: "24px",
+                  paddingBottom: "24px",
+                  paddingLeft: "16px",
+                  paddingRight: "16px",
                 })}
               >
                 <Calendar
@@ -237,7 +265,10 @@ export function Sidebar() {
             <div
               class={css({
                 textAlign: "center",
-                paddingTop: "32px", paddingBottom: "32px", paddingLeft: "16px", paddingRight: "16px",
+                paddingTop: "32px",
+                paddingBottom: "32px",
+                paddingLeft: "16px",
+                paddingRight: "16px",
                 color: "mutedHover",
                 fontSize: "13px",
               })}
@@ -282,7 +313,10 @@ function UpcomingEventCard(props: { event: CalendarEvent }) {
   return (
     <div
       class={css({
-        paddingTop: "12px", paddingBottom: "12px", paddingLeft: "12px", paddingRight: "12px",
+        paddingTop: "12px",
+        paddingBottom: "12px",
+        paddingLeft: "12px",
+        paddingRight: "12px",
         borderRadius: "8px",
         backgroundColor: "muted",
         borderLeft: "3px solid",

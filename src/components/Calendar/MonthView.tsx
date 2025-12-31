@@ -99,9 +99,22 @@ export function MonthView() {
                 fontSize: "11px",
                 fontWeight: "600",
                 color: "mutedHover",
-                paddingTop: "12px", paddingBottom: "12px", paddingLeft: "8px", paddingRight: "8px",
+                paddingTop: "12px",
+                paddingBottom: "12px",
+                paddingLeft: "8px",
+                paddingRight: "8px",
                 textTransform: "uppercase",
                 letterSpacing: "0.05em",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                "@media (max-width: 768px)": {
+                  fontSize: "10px",
+                  paddingTop: "8px",
+                  paddingBottom: "8px",
+                  paddingLeft: "4px",
+                  paddingRight: "4px",
+                },
               })}
             >
               {day}
@@ -120,7 +133,10 @@ export function MonthView() {
           overflow: "hidden",
           gap: "1px",
           backgroundColor: "border",
-          paddingTop: "1px", paddingBottom: "1px", paddingLeft: "1px", paddingRight: "1px",
+          paddingTop: "1px",
+          paddingBottom: "1px",
+          paddingLeft: "1px",
+          paddingRight: "1px",
         })}
       >
         <For each={calendarDays()}>
@@ -133,14 +149,24 @@ export function MonthView() {
             return (
               <div
                 class={css({
-                  paddingTop: "10px", paddingBottom: "10px", paddingLeft: "10px", paddingRight: "10px",
+                  paddingTop: "10px",
+                  paddingBottom: "10px",
+                  paddingLeft: "10px",
+                  paddingRight: "10px",
                   overflow: "hidden",
                   cursor: "pointer",
                   transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
                   backgroundColor: isSelected ? "muted" : "background",
                   position: "relative",
+                  minWidth: 0,
                   _hover: {
                     backgroundColor: "hover",
+                  },
+                  "@media (max-width: 768px)": {
+                    paddingTop: "6px",
+                    paddingBottom: "6px",
+                    paddingLeft: "6px",
+                    paddingRight: "6px",
                   },
                 })}
                 onClick={() => handleDayClick(date)}
@@ -151,6 +177,9 @@ export function MonthView() {
                     display: "flex",
                     justifyContent: "flex-end",
                     marginBottom: "8px",
+                    "@media (max-width: 768px)": {
+                      marginBottom: "4px",
+                    },
                   })}
                 >
                   <span
@@ -170,6 +199,11 @@ export function MonthView() {
                         : isCurrentMonth
                           ? "foreground"
                           : "mutedHover",
+                      "@media (max-width: 768px)": {
+                        minWidth: "22px",
+                        height: "22px",
+                        fontSize: "11px",
+                      },
                     })}
                   >
                     {date.day}
@@ -183,6 +217,10 @@ export function MonthView() {
                     flexDirection: "column",
                     gap: "4px",
                     overflow: "hidden",
+                    minWidth: 0,
+                    "@media (max-width: 768px)": {
+                      gap: "2px",
+                    },
                   })}
                 >
                   <For each={dayEvents().slice(0, 3)}>
@@ -191,13 +229,24 @@ export function MonthView() {
                         class={css({
                           fontSize: "11px",
                           fontWeight: "500",
-                          paddingTop: "5px", paddingBottom: "5px", paddingLeft: "7px", paddingRight: "7px",
+                          paddingTop: "5px",
+                          paddingBottom: "5px",
+                          paddingLeft: "7px",
+                          paddingRight: "7px",
                           borderRadius: "5px",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
                           cursor: "pointer",
                           transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+                          minWidth: 0,
+                          "@media (max-width: 768px)": {
+                            fontSize: "9px",
+                            paddingTop: "3px",
+                            paddingBottom: "3px",
+                            paddingLeft: "5px",
+                            paddingRight: "5px",
+                          },
                           _hover: {
                             opacity: 0.8,
                           },

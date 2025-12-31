@@ -46,7 +46,10 @@ export function MiniCalendar() {
   return (
     <div
       class={css({
-        paddingTop: "12px", paddingBottom: "12px", paddingLeft: "12px", paddingRight: "12px",
+        paddingTop: "12px",
+        paddingBottom: "12px",
+        paddingLeft: "12px",
+        paddingRight: "12px",
         borderRadius: "8px",
         backgroundColor: "muted",
       })}
@@ -149,7 +152,8 @@ export function MiniCalendar() {
         class={css({
           display: "grid",
           gridTemplateColumns: "repeat(7, 1fr)",
-          gap: "2px",
+          gap: "4px",
+          placeItems: "center",
         })}
       >
         <For each={calendarDays()}>
@@ -161,12 +165,13 @@ export function MiniCalendar() {
             return (
               <button
                 class={css({
-                  width: "30px",
-                  height: "30px",
+                  width: "100%",
+                  aspectRatio: "1",
+                  maxWidth: "32px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "13px",
+                  fontSize: "12px",
                   border: "none",
                   borderRadius: "6px",
                   cursor: "pointer",
@@ -176,11 +181,12 @@ export function MiniCalendar() {
                     : isTodayDate
                       ? "accent"
                       : "transparent",
-                  color: isSelected || isTodayDate
-                    ? "background"
-                    : isCurrentMonth
-                      ? "foreground"
-                      : "mutedHover",
+                  color:
+                    isSelected || isTodayDate
+                      ? "background"
+                      : isCurrentMonth
+                        ? "foreground"
+                        : "mutedHover",
                   fontWeight: isTodayDate || isSelected ? "600" : "500",
                   _hover: {
                     backgroundColor: isSelected

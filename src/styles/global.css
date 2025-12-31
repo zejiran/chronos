@@ -28,6 +28,24 @@
   --colors-event-meeting: #f9e2af;
   --colors-event-focus: #cba6f7;
   --colors-event-default: #6c7086;
+
+  /* Responsive sizing */
+  --sidebar-width: 280px;
+  --header-height: 56px;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 0px;
+    --header-height: 48px;
+  }
 }
 
 /* Light theme */
@@ -324,5 +342,19 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  /* Ensure proper text wrapping on mobile */
+  * {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Reduce animations on smaller screens */
+  * {
+    transition-duration: 100ms !important;
   }
 }

@@ -89,6 +89,7 @@ export function Header() {
           alignItems: "center",
           gap: "12px",
           flex: "1",
+          minWidth: 0,
         })}
       >
         {/* Window controls (macOS traffic lights replacement) */}
@@ -237,6 +238,12 @@ export function Header() {
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
+            minWidth: 0,
+            maxWidth: "300px",
+            "@media (max-width: 768px)": {
+              fontSize: "16px",
+              maxWidth: "200px",
+            },
           })}
         >
           {dateDisplay()}
@@ -259,6 +266,13 @@ export function Header() {
           position: "absolute",
           left: "50%",
           transform: "translateX(-50%)",
+          zIndex: 1,
+          "@media (max-width: 1200px)": {
+            position: "static",
+            transform: "none",
+            marginLeft: "auto",
+            marginRight: "auto",
+          },
         })}
       >
         {views.map((view) => (
@@ -278,6 +292,7 @@ export function Header() {
               justifyContent: "center",
               cursor: "pointer",
               transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
+              whiteSpace: "nowrap",
               backgroundColor:
                 $currentView() === view.id ? "primary" : "transparent",
               color: $currentView() === view.id ? "background" : "mutedHover",
@@ -288,6 +303,12 @@ export function Header() {
               },
               _active: {
                 transform: "scale(0.97)",
+              },
+              "@media (max-width: 768px)": {
+                paddingLeft: "8px",
+                paddingRight: "8px",
+                fontSize: "12px",
+                height: "28px",
               },
             })}
             onClick={() => setView(view.id)}
@@ -307,6 +328,10 @@ export function Header() {
           gap: "12px",
           flex: "1",
           justifyContent: "flex-end",
+          minWidth: 0,
+          "@media (max-width: 768px)": {
+            gap: "8px",
+          },
         })}
       >
         {/* Sync indicator */}
@@ -367,6 +392,11 @@ export function Header() {
             _active: {
               transform: "scale(0.97)",
             },
+            "@media (max-width: 768px)": {
+              paddingLeft: "8px",
+              paddingRight: "8px",
+              height: "28px",
+            },
           })}
         >
           <Search size={14} />
@@ -380,6 +410,9 @@ export function Header() {
               backgroundColor: "hover",
               borderRadius: "4px",
               fontWeight: "600",
+              "@media (max-width: 768px)": {
+                display: "none",
+              },
             })}
           >
             ⌘K
@@ -408,16 +441,30 @@ export function Header() {
             height: "32px",
             cursor: "pointer",
             transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+            whiteSpace: "nowrap",
             _hover: {
               backgroundColor: "primaryHover",
             },
             _active: {
               transform: "translateY(0) scale(0.98)",
             },
+            "@media (max-width: 768px)": {
+              paddingLeft: "10px",
+              paddingRight: "10px",
+              fontSize: "12px",
+              height: "28px",
+            },
+            "@media (max-width: 600px)": {
+              "& span": {
+                display: "none",
+              },
+              paddingLeft: "8px",
+              paddingRight: "8px",
+            },
           })}
         >
           <Plus size={14} strokeWidth={2.5} />
-          New Event
+          <span>New Event</span>
         </button>
       </div>
     </header>

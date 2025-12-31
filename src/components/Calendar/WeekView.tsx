@@ -32,14 +32,18 @@ export function WeekView() {
 
   // Drag to create state
   const [isDragging, setIsDragging] = createSignal(false);
-  const [dragStart, setDragStart] = createSignal<{ date: Temporal.PlainDate; hour: number } | null>(null);
-  const [dragEnd, setDragEnd] = createSignal<{ date: Temporal.PlainDate; hour: number } | null>(null);
+  const [dragStart, setDragStart] = createSignal<{
+    date: Temporal.PlainDate;
+    hour: number;
+  } | null>(null);
+  const [dragEnd, setDragEnd] = createSignal<{
+    date: Temporal.PlainDate;
+    hour: number;
+  } | null>(null);
 
   const HOUR_HEIGHT = 64; // Height of each hour cell in pixels
 
-  const getEventsForDate = (
-    date: Temporal.PlainDate,
-  ): CalendarEvent[] => {
+  const getEventsForDate = (date: Temporal.PlainDate): CalendarEvent[] => {
     const visibleCalendarIds = new Set(
       Object.values($calendars())
         .filter((cal) => cal.isVisible)
@@ -61,10 +65,16 @@ export function WeekView() {
     });
   };
 
-  const getEventPosition = (event: CalendarEvent): { top: number; height: number } => {
+  const getEventPosition = (
+    event: CalendarEvent,
+  ): { top: number; height: number } => {
     try {
-      const eventStart = Temporal.PlainDateTime.from(event.startTime.replace("Z", ""));
-      const eventEnd = Temporal.PlainDateTime.from(event.endTime.replace("Z", ""));
+      const eventStart = Temporal.PlainDateTime.from(
+        event.startTime.replace("Z", ""),
+      );
+      const eventEnd = Temporal.PlainDateTime.from(
+        event.endTime.replace("Z", ""),
+      );
 
       // Calculate top position based on start time
       const startMinutes = eventStart.hour * 60 + eventStart.minute;
@@ -163,7 +173,10 @@ export function WeekView() {
   document.addEventListener("mouseup", handleMouseUp);
 
   // Check if a cell is within the drag selection
-  const isCellInSelection = (date: Temporal.PlainDate, hour: number): boolean => {
+  const isCellInSelection = (
+    date: Temporal.PlainDate,
+    hour: number,
+  ): boolean => {
     if (!isDragging() || !dragStart() || !dragEnd()) return false;
 
     const start = dragStart()!;
@@ -195,6 +208,9 @@ export function WeekView() {
           borderRight: "1px solid",
           borderColor: "border",
           backgroundColor: "background",
+          "@media (max-width: 768px)": {
+            width: "56px",
+          },
         })}
       >
         {/* Header spacer */}
@@ -220,6 +236,14 @@ export function WeekView() {
             color: "mutedHover",
             paddingLeft: "8px",
             paddingRight: "8px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            "@media (max-width: 768px)": {
+              fontSize: "10px",
+              paddingLeft: "4px",
+              paddingRight: "4px",
+            },
           })}
         >
           All day
@@ -240,6 +264,11 @@ export function WeekView() {
                   justifyContent: "flex-end",
                   paddingRight: "12px",
                   paddingTop: "4px",
+                  overflow: "hidden",
+                  "@media (max-width: 768px)": {
+                    fontSize: "10px",
+                    paddingRight: "6px",
+                  },
                 })}
               >
                 {hour === 0
@@ -290,7 +319,10 @@ export function WeekView() {
                   <div
                     class={css({
                       textAlign: "center",
-                      paddingTop: "16px", paddingBottom: "16px", paddingLeft: "12px", paddingRight: "12px",
+                      paddingTop: "16px",
+                      paddingBottom: "16px",
+                      paddingLeft: "12px",
+                      paddingRight: "12px",
                       borderRight: "1px solid",
                       borderColor: "border",
                       backgroundColor: "muted",
@@ -329,6 +361,11 @@ export function WeekView() {
                           ? "primary"
                           : "transparent",
                         color: isTodayDate ? "background" : "foreground",
+                        "@media (max-width: 768px)": {
+                          width: "28px",
+                          height: "28px",
+                          fontSize: "14px",
+                        },
                       })}
                     >
                       {d.day}
@@ -360,7 +397,10 @@ export function WeekView() {
                     class={css({
                       borderRight: "1px solid",
                       borderColor: "border",
-                      paddingTop: "8px", paddingBottom: "8px", paddingLeft: "8px", paddingRight: "8px",
+                      paddingTop: "8px",
+                      paddingBottom: "8px",
+                      paddingLeft: "8px",
+                      paddingRight: "8px",
                       display: "flex",
                       flexDirection: "column",
                       gap: "4px",
@@ -374,7 +414,10 @@ export function WeekView() {
                         <div
                           class={css({
                             fontSize: "12px",
-                            paddingTop: "4px", paddingBottom: "4px", paddingLeft: "6px", paddingRight: "6px",
+                            paddingTop: "4px",
+                            paddingBottom: "4px",
+                            paddingLeft: "6px",
+                            paddingRight: "6px",
                             borderRadius: "4px",
                             cursor: "pointer",
                             overflow: "hidden",
@@ -422,7 +465,9 @@ export function WeekView() {
                       const d = date();
                       const isTodayDate = isToday(d);
                       const isLastColumn = index === 6;
-                      const isSelected = createMemo(() => isCellInSelection(d, hour));
+                      const isSelected = createMemo(() =>
+                        isCellInSelection(d, hour),
+                      );
 
                       return (
                         <div
@@ -452,7 +497,9 @@ export function WeekView() {
                             handleMouseDown(d, hour);
                           }}
                           onMouseEnter={() => handleMouseEnter(d, hour)}
-                          onClick={() => !isDragging() && handleCellClick(d, hour)}
+                          onClick={() =>
+                            !isDragging() && handleCellClick(d, hour)
+                          }
                         />
                       );
                     }}
@@ -501,7 +548,10 @@ export function WeekView() {
                                 left: "2px",
                                 right: "2px",
                                 fontSize: "11px",
-                                paddingTop: "4px", paddingBottom: "4px", paddingLeft: "6px", paddingRight: "6px",
+                                paddingTop: "4px",
+                                paddingBottom: "4px",
+                                paddingLeft: "6px",
+                                paddingRight: "6px",
                                 borderRadius: "4px",
                                 cursor: "pointer",
                                 overflow: "hidden",
