@@ -1,7 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import type {
   Event,
-  CalendarEvent,
   Calendar,
   Account,
   Settings,

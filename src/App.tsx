@@ -1,4 +1,4 @@
-import { onMount, onCleanup, Show } from "solid-js";
+import { onMount, onCleanup } from "solid-js";
 import { css } from "../styled-system/css";
 import { Header } from "./components/Layout/Header";
 import { Sidebar } from "./components/Sidebar/Sidebar";
@@ -9,8 +9,6 @@ import { SettingsModal } from "./components/Settings/SettingsModal";
 import { AccountModal } from "./components/Accounts/AccountModal";
 import {
   settings,
-  calendars,
-  accounts,
   addCalendar,
   addAccount,
   commandPaletteOpen,

@@ -1,45 +1,58 @@
-import { createMemo, For, Show } from 'solid-js'
-import { useStore } from '@nanostores/solid'
-import { css } from '../../../styled-system/css'
-import { selectedDate, events, calendars, eventModalOpen, selectedEventId } from '../../stores'
-import { formatDate, formatTime, isToday, getDurationString } from '../../lib/date'
-import { Temporal } from '@js-temporal/polyfill'
-import type { Event } from '../../types'
+import { createMemo, For, Show } from "solid-js";
+import { useStore } from "@nanostores/solid";
+import { css } from "../../../styled-system/css";
+import {
+  selectedDate,
+  events,
+  calendars,
+  eventModalOpen,
+  selectedEventId,
+} from "../../stores";
+import {
+  formatDate,
+  formatTime,
+  isToday,
+  getDurationString,
+} from "../../lib/date";
+import { Temporal } from "@js-temporal/polyfill";
+import type { CalendarEvent } from "../../types";
 
 export function AgendaView() {
-  const $selectedDate = useStore(selectedDate)
-  const $events = useStore(events)
-  const $calendars = useStore(calendars)
+  const $selectedDate = useStore(selectedDate);
+  const $events = useStore(events);
+  const $calendars = useStore(calendars);
 
   const upcomingDays = createMemo(() => {
-    const startDate = Temporal.PlainDate.from($selectedDate())
-    return Array.from({ length: 30 }, (_, i) => startDate.add({ days: i }))
-  })
+    const startDate = Temporal.PlainDate.from($selectedDate());
+    return Array.from({ length: 30 }, (_, i) => startDate.add({ days: i }));
+  });
 
-  const getEventsForDate = (date: Temporal.PlainDate): Event[] => {
+  const getEventsForDate = (date: Temporal.PlainDate): CalendarEvent[] => {
     const visibleCalendarIds = new Set(
       Object.values($calendars())
         .filter((cal) => cal.isVisible)
-        .map((cal) => cal.id)
-    )
+        .map((cal) => cal.id),
+    );
 
     return Object.values($events())
       .filter((event) => {
-        if (!visibleCalendarIds.has(event.calendarId)) return false
+        if (!visibleCalendarIds.has(event.calendarId)) return false;
 
         try {
-          const eventStart = Temporal.PlainDateTime.from(event.startTime.replace('Z', ''))
-          return eventStart.toPlainDate().equals(date)
+          const eventStart = Temporal.PlainDateTime.from(
+            event.startTime.replace("Z", ""),
+          );
+          return eventStart.toPlainDate().equals(date);
         } catch {
-          return false
+          return false;
         }
       })
       .sort((a, b) => {
-        if (a.allDay && !b.allDay) return -1
-        if (!a.allDay && b.allDay) return 1
-        return a.startTime.localeCompare(b.startTime)
-      })
-  }
+        if (a.isAllDay && !b.isAllDay) return -1;
+        if (!a.isAllDay && b.isAllDay) return 1;
+        return a.startTime.localeCompare(b.startTime);
+      });
+  };
 
   const daysWithEvents = createMemo(() => {
     return upcomingDays()
@@ -47,48 +60,48 @@ export function AgendaView() {
         date,
         events: getEventsForDate(date),
       }))
-      .filter((day) => day.events.length > 0)
-  })
+      .filter((day) => day.events.length > 0);
+  });
 
-  const handleEventClick = (event: Event) => {
-    selectedEventId.set(event.id)
-    eventModalOpen.set(true)
-  }
+  const handleEventClick = (event: CalendarEvent) => {
+    selectedEventId.set(event.id);
+    eventModalOpen.set(true);
+  };
 
   return (
     <div
       class={css({
-        height: '100%',
-        overflow: 'auto',
-        padding: 'lg',
-        '&::-webkit-scrollbar': {
-          width: '8px',
+        height: "100%",
+        overflow: "auto",
+        padding: "lg",
+        "&::-webkit-scrollbar": {
+          width: "8px",
         },
-        '&::-webkit-scrollbar-thumb': {
-          backgroundColor: 'border',
-          borderRadius: 'full',
+        "&::-webkit-scrollbar-thumb": {
+          backgroundColor: "border",
+          borderRadius: "full",
         },
       })}
     >
       <div
         class={css({
-          maxWidth: '800px',
-          margin: '0 auto',
+          maxWidth: "800px",
+          margin: "0 auto",
         })}
       >
         <Show when={daysWithEvents().length === 0}>
           <div
             class={css({
-              textAlign: 'center',
-              padding: '2xl',
-              color: 'mutedHover',
+              textAlign: "center",
+              padding: "2xl",
+              color: "mutedHover",
             })}
           >
-            <div class={css({ fontSize: '3xl', marginBottom: 'md' })}>📅</div>
-            <div class={css({ fontSize: 'lg', fontWeight: 'medium' })}>
+            <div class={css({ fontSize: "3xl", marginBottom: "md" })}>📅</div>
+            <div class={css({ fontSize: "lg", fontWeight: "medium" })}>
               No upcoming events
             </div>
-            <div class={css({ fontSize: 'sm', marginTop: 'sm' })}>
+            <div class={css({ fontSize: "sm", marginTop: "sm" })}>
               Events for the next 30 days will appear here
             </div>
           </div>
@@ -96,44 +109,56 @@ export function AgendaView() {
 
         <For each={daysWithEvents()}>
           {(day) => (
-            <div class={css({ marginBottom: 'lg' })}>
+            <div class={css({ marginBottom: "lg" })}>
               {/* Date header */}
               <div
                 class={css({
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 'md',
-                  marginBottom: 'sm',
-                  paddingBottom: 'sm',
-                  borderBottom: '1px solid {colors.border}',
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "md",
+                  marginBottom: "sm",
+                  paddingBottom: "sm",
+                  borderBottom: "1px solid {colors.border}",
                 })}
               >
                 <div
                   class={css({
-                    width: '48px',
-                    height: '48px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 'lg',
-                    backgroundColor: isToday(day.date) ? 'primary' : 'muted',
-                    color: isToday(day.date) ? 'background' : 'foreground',
+                    width: "48px",
+                    height: "48px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "lg",
+                    backgroundColor: isToday(day.date) ? "primary" : "muted",
+                    color: isToday(day.date) ? "background" : "foreground",
                   })}
                 >
-                  <span class={css({ fontSize: 'xs', fontWeight: 'medium' })}>
-                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][day.date.dayOfWeek - 1]}
+                  <span class={css({ fontSize: "xs", fontWeight: "medium" })}>
+                    {
+                      ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][
+                        day.date.dayOfWeek - 1
+                      ]
+                    }
                   </span>
-                  <span class={css({ fontSize: 'lg', fontWeight: 'bold' })}>
+                  <span class={css({ fontSize: "lg", fontWeight: "bold" })}>
                     {day.date.day}
                   </span>
                 </div>
                 <div>
-                  <div class={css({ fontSize: 'base', fontWeight: 'semibold', color: 'foreground' })}>
-                    {formatDate(day.date, 'long')}
+                  <div
+                    class={css({
+                      fontSize: "base",
+                      fontWeight: "semibold",
+                      color: "foreground",
+                    })}
+                  >
+                    {formatDate(day.date, "long")}
                   </div>
                   <Show when={isToday(day.date)}>
-                    <div class={css({ fontSize: 'sm', color: 'primary' })}>Today</div>
+                    <div class={css({ fontSize: "sm", color: "primary" })}>
+                      Today
+                    </div>
                   </Show>
                 </div>
               </div>
@@ -141,51 +166,66 @@ export function AgendaView() {
               {/* Events list */}
               <div
                 class={css({
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 'sm',
-                  paddingLeft: '64px',
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "sm",
+                  paddingLeft: "64px",
                 })}
               >
                 <For each={day.events}>
                   {(event) => (
                     <div
                       class={css({
-                        display: 'flex',
-                        gap: 'md',
-                        padding: 'md',
-                        borderRadius: 'lg',
-                        backgroundColor: 'muted',
-                        cursor: 'pointer',
-                        transition: 'all 150ms',
-                        borderLeft: '4px solid',
+                        display: "flex",
+                        gap: "md",
+                        padding: "md",
+                        borderRadius: "lg",
+                        backgroundColor: "muted",
+                        cursor: "pointer",
+                        transition: "all 150ms",
+                        borderLeft: "4px solid",
                         _hover: {
-                          backgroundColor: 'hover',
-                          transform: 'translateX(4px)',
+                          backgroundColor: "hover",
+                          transform: "translateX(4px)",
                         },
                       })}
                       style={{
-                        'border-left-color': event.color || 'var(--colors-primary)',
+                        "border-left-color":
+                          event.color || "var(--colors-primary)",
                       }}
                       onClick={() => handleEventClick(event)}
                     >
                       {/* Time column */}
                       <div
                         class={css({
-                          width: '80px',
+                          width: "80px",
                           flexShrink: 0,
                         })}
                       >
-                        <Show when={event.allDay}>
-                          <span class={css({ fontSize: 'sm', color: 'primary', fontWeight: 'medium' })}>
+                        <Show when={event.isAllDay}>
+                          <span
+                            class={css({
+                              fontSize: "sm",
+                              color: "primary",
+                              fontWeight: "medium",
+                            })}
+                          >
                             All day
                           </span>
                         </Show>
-                        <Show when={!event.allDay}>
-                          <div class={css({ fontSize: 'sm', fontWeight: 'medium', color: 'foreground' })}>
-                            {formatTime(event.startTime, '12h')}
+                        <Show when={!event.isAllDay}>
+                          <div
+                            class={css({
+                              fontSize: "sm",
+                              fontWeight: "medium",
+                              color: "foreground",
+                            })}
+                          >
+                            {formatTime(event.startTime, "12h")}
                           </div>
-                          <div class={css({ fontSize: 'xs', color: 'mutedHover' })}>
+                          <div
+                            class={css({ fontSize: "xs", color: "mutedHover" })}
+                          >
                             {getDurationString(event.startTime, event.endTime)}
                           </div>
                         </Show>
@@ -195,10 +235,10 @@ export function AgendaView() {
                       <div class={css({ flex: 1, minWidth: 0 })}>
                         <div
                           class={css({
-                            fontSize: 'base',
-                            fontWeight: 'medium',
-                            color: 'foreground',
-                            marginBottom: 'xs',
+                            fontSize: "base",
+                            fontWeight: "medium",
+                            color: "foreground",
+                            marginBottom: "xs",
                           })}
                         >
                           {event.title}
@@ -206,11 +246,11 @@ export function AgendaView() {
                         <Show when={event.location}>
                           <div
                             class={css({
-                              fontSize: 'sm',
-                              color: 'mutedHover',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 'xs',
+                              fontSize: "sm",
+                              color: "mutedHover",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "xs",
                             })}
                           >
                             📍 {event.location}
@@ -219,12 +259,12 @@ export function AgendaView() {
                         <Show when={event.description}>
                           <div
                             class={css({
-                              fontSize: 'sm',
-                              color: 'mutedHover',
-                              marginTop: 'xs',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
+                              fontSize: "sm",
+                              color: "mutedHover",
+                              marginTop: "xs",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
                             })}
                           >
                             {event.description}
@@ -233,18 +273,18 @@ export function AgendaView() {
                       </div>
 
                       {/* Video call indicator */}
-                      <Show when={event.videoLink}>
+                      <Show when={event.meetingUrl}>
                         <div
                           class={css({
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 'xs',
-                            padding: 'xs sm',
-                            borderRadius: 'md',
-                            backgroundColor: 'success',
-                            color: 'background',
-                            fontSize: 'xs',
-                            fontWeight: 'medium',
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "xs",
+                            padding: "xs sm",
+                            borderRadius: "md",
+                            backgroundColor: "success",
+                            color: "background",
+                            fontSize: "xs",
+                            fontWeight: "medium",
                           })}
                         >
                           🎥 Join
@@ -259,5 +299,5 @@ export function AgendaView() {
         </For>
       </div>
     </div>
-  )
+  );
 }

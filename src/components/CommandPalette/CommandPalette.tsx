@@ -1,34 +1,35 @@
-import { createSignal, createEffect, For, Show, onMount, onCleanup } from 'solid-js';
-import { css } from '../../../styled-system/css';
-import { useStore } from '@nanostores/solid';
+import { createSignal, createEffect, For, Show } from "solid-js";
+import { css } from "../../../styled-system/css";
+import { useStore } from "@nanostores/solid";
 import {
   commandPaletteOpen,
   eventModalOpen,
   settingsModalOpen,
   events,
-  calendars,
   goToToday,
   goToPrevious,
   goToNext,
   setView,
   setSelectedEvent,
-  selectedDate,
-} from '../../stores';
-import type { CalendarEvent, CalendarView } from '../../types';
-import { Temporal } from '@js-temporal/polyfill';
+} from "../../stores";
+import type { CalendarEvent } from "../../types";
+import { Temporal } from "@js-temporal/polyfill";
 
 interface Command {
   id: string;
   title: string;
   description?: string;
   icon?: string;
-  category: 'navigation' | 'event' | 'view' | 'action' | 'settings';
+  category: "navigation" | "event" | "view" | "action" | "settings";
   keywords?: string[];
   action: () => void;
 }
 
 // Simple fuzzy search implementation
-function fuzzyMatch(text: string, pattern: string): { match: boolean; score: number } {
+function fuzzyMatch(
+  text: string,
+  pattern: string,
+): { match: boolean; score: number } {
   const textLower = text.toLowerCase();
   const patternLower = pattern.toLowerCase();
 
@@ -42,7 +43,11 @@ function fuzzyMatch(text: string, pattern: string): { match: boolean; score: num
   let score = 0;
   let consecutiveMatches = 0;
 
-  for (let i = 0; i < textLower.length && patternIdx < patternLower.length; i++) {
+  for (
+    let i = 0;
+    i < textLower.length && patternIdx < patternLower.length;
+    i++
+  ) {
     if (textLower[i] === patternLower[patternIdx]) {
       patternIdx++;
       consecutiveMatches++;
@@ -61,9 +66,8 @@ function fuzzyMatch(text: string, pattern: string): { match: boolean; score: num
 export function CommandPalette() {
   const $isOpen = useStore(commandPaletteOpen);
   const $events = useStore(events);
-  const $calendars = useStore(calendars);
 
-  const [query, setQuery] = createSignal('');
+  const [query, setQuery] = createSignal("");
   const [selectedIndex, setSelectedIndex] = createSignal(0);
   let inputRef: HTMLInputElement | undefined;
 
@@ -71,33 +75,33 @@ export function CommandPalette() {
   const getBaseCommands = (): Command[] => [
     // Navigation
     {
-      id: 'nav-today',
-      title: 'Go to Today',
-      description: 'Navigate to current date',
-      category: 'navigation',
-      keywords: ['today', 'now', 'current'],
+      id: "nav-today",
+      title: "Go to Today",
+      description: "Navigate to current date",
+      category: "navigation",
+      keywords: ["today", "now", "current"],
       action: () => {
         goToToday();
         commandPaletteOpen.set(false);
       },
     },
     {
-      id: 'nav-prev',
-      title: 'Previous Period',
-      description: 'Go to previous day/week/month',
-      category: 'navigation',
-      keywords: ['back', 'previous', 'earlier'],
+      id: "nav-prev",
+      title: "Previous Period",
+      description: "Go to previous day/week/month",
+      category: "navigation",
+      keywords: ["back", "previous", "earlier"],
       action: () => {
         goToPrevious();
         commandPaletteOpen.set(false);
       },
     },
     {
-      id: 'nav-next',
-      title: 'Next Period',
-      description: 'Go to next day/week/month',
-      category: 'navigation',
-      keywords: ['forward', 'next', 'later'],
+      id: "nav-next",
+      title: "Next Period",
+      description: "Go to next day/week/month",
+      category: "navigation",
+      keywords: ["forward", "next", "later"],
       action: () => {
         goToNext();
         commandPaletteOpen.set(false);
@@ -106,79 +110,79 @@ export function CommandPalette() {
 
     // Views
     {
-      id: 'view-day',
-      title: 'Day View',
-      description: 'Switch to day view',
-      category: 'view',
-      keywords: ['day', 'daily', 'single'],
+      id: "view-day",
+      title: "Day View",
+      description: "Switch to day view",
+      category: "view",
+      keywords: ["day", "daily", "single"],
       action: () => {
-        setView('day');
+        setView("day");
         commandPaletteOpen.set(false);
       },
     },
     {
-      id: 'view-week',
-      title: 'Week View',
-      description: 'Switch to week view',
-      category: 'view',
-      keywords: ['week', 'weekly', '7 days'],
+      id: "view-week",
+      title: "Week View",
+      description: "Switch to week view",
+      category: "view",
+      keywords: ["week", "weekly", "7 days"],
       action: () => {
-        setView('week');
+        setView("week");
         commandPaletteOpen.set(false);
       },
     },
     {
-      id: 'view-month',
-      title: 'Month View',
-      description: 'Switch to month view',
-      category: 'view',
-      keywords: ['month', 'monthly', 'calendar'],
+      id: "view-month",
+      title: "Month View",
+      description: "Switch to month view",
+      category: "view",
+      keywords: ["month", "monthly", "calendar"],
       action: () => {
-        setView('month');
+        setView("month");
         commandPaletteOpen.set(false);
       },
     },
     {
-      id: 'view-year',
-      title: 'Year View',
-      description: 'Switch to year view',
-      category: 'view',
-      keywords: ['year', 'yearly', 'annual'],
+      id: "view-year",
+      title: "Year View",
+      description: "Switch to year view",
+      category: "view",
+      keywords: ["year", "yearly", "annual"],
       action: () => {
-        setView('year');
+        setView("year");
         commandPaletteOpen.set(false);
       },
     },
     {
-      id: 'view-agenda',
-      title: 'Agenda View',
-      description: 'Switch to agenda/list view',
-      category: 'view',
-      keywords: ['agenda', 'list', 'schedule'],
+      id: "view-agenda",
+      title: "Agenda View",
+      description: "Switch to agenda/list view",
+      category: "view",
+      keywords: ["agenda", "list", "schedule"],
       action: () => {
-        setView('agenda');
+        setView("agenda");
         commandPaletteOpen.set(false);
       },
     },
 
     // Actions
     {
-      id: 'action-new-event',
-      title: 'New Event',
-      description: 'Create a new calendar event',
-      category: 'action',
-      keywords: ['create', 'add', 'new', 'event', 'appointment'],
+      id: "action-new-event",
+      title: "New Event",
+      description: "Create a new calendar event",
+      category: "action",
+      keywords: ["create", "add", "new", "event", "appointment"],
       action: () => {
         commandPaletteOpen.set(false);
         eventModalOpen.set(true);
       },
     },
     {
-      id: 'action-settings',
-      title: 'Open Settings',
-      description: 'Configure app preferences',
-      category: 'settings',
-      keywords: ['settings', 'preferences', 'options', 'configure'],
+      id: "action-settings",
+      title: "Open Settings",
+      description: "Configure app preferences",
+      category: "settings",
+      keywords: ["settings", "preferences", "options", "configure"],
       action: () => {
         commandPaletteOpen.set(false);
         settingsModalOpen.set(true);
@@ -193,8 +197,12 @@ export function CommandPalette() {
       id: `event-${event.id}`,
       title: event.title,
       description: formatEventTime(event),
-      category: 'event' as const,
-      keywords: [event.title, event.location || '', event.description || ''].filter(Boolean),
+      category: "event" as const,
+      keywords: [
+        event.title,
+        event.location || "",
+        event.description || "",
+      ].filter(Boolean),
       action: () => {
         setSelectedEvent(event);
         commandPaletteOpen.set(false);
@@ -215,12 +223,26 @@ export function CommandPalette() {
     const results = allCommands
       .map((cmd) => {
         const titleMatch = fuzzyMatch(cmd.title, q);
-        const descMatch = cmd.description ? fuzzyMatch(cmd.description, q) : { match: false, score: 0 };
-        const keywordMatches = (cmd.keywords || []).map((k) => fuzzyMatch(k, q));
-        const bestKeywordScore = Math.max(0, ...keywordMatches.map((m) => m.score));
+        const descMatch = cmd.description
+          ? fuzzyMatch(cmd.description, q)
+          : { match: false, score: 0 };
+        const keywordMatches = (cmd.keywords || []).map((k) =>
+          fuzzyMatch(k, q),
+        );
+        const bestKeywordScore = Math.max(
+          0,
+          ...keywordMatches.map((m) => m.score),
+        );
 
-        const score = Math.max(titleMatch.score * 1.5, descMatch.score, bestKeywordScore);
-        const match = titleMatch.match || descMatch.match || keywordMatches.some((m) => m.match);
+        const score = Math.max(
+          titleMatch.score * 1.5,
+          descMatch.score,
+          bestKeywordScore,
+        );
+        const match =
+          titleMatch.match ||
+          descMatch.match ||
+          keywordMatches.some((m) => m.match);
 
         return { cmd, score, match };
       })
@@ -243,7 +265,7 @@ export function CommandPalette() {
   // Focus input when opened
   createEffect(() => {
     if ($isOpen()) {
-      setQuery('');
+      setQuery("");
       setSelectedIndex(0);
       setTimeout(() => inputRef?.focus(), 0);
     }
@@ -254,78 +276,80 @@ export function CommandPalette() {
     const commands = filteredCommands();
 
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
         setSelectedIndex((i) => Math.min(i + 1, commands.length - 1));
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
         setSelectedIndex((i) => Math.max(i - 1, 0));
         break;
-      case 'Enter':
+      case "Enter":
         e.preventDefault();
         const selected = commands[selectedIndex()];
         if (selected) {
           selected.action();
         }
         break;
-      case 'Escape':
+      case "Escape":
         e.preventDefault();
         commandPaletteOpen.set(false);
         break;
     }
   };
 
-  const categoryLabels: Record<Command['category'], string> = {
-    navigation: 'Navigation',
-    event: 'Events',
-    view: 'Views',
-    action: 'Actions',
-    settings: 'Settings',
+  const categoryLabels: Record<Command["category"], string> = {
+    navigation: "Navigation",
+    event: "Events",
+    view: "Views",
+    action: "Actions",
+    settings: "Settings",
   };
 
-  const categoryIcons: Record<Command['category'], string> = {
-    navigation: '→',
-    event: '📅',
-    view: '👁',
-    action: '⚡',
-    settings: '⚙',
+  const categoryIcons: Record<Command["category"], string> = {
+    navigation: "→",
+    event: "📅",
+    view: "👁",
+    action: "⚡",
+    settings: "⚙",
   };
 
   return (
     <Show when={$isOpen()}>
       <div
         class={css({
-          position: 'fixed',
+          position: "fixed",
           inset: 0,
           zIndex: 1100,
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'center',
-          paddingTop: '15vh',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          backdropFilter: 'blur(4px)',
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "center",
+          paddingTop: "15vh",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          backdropFilter: "blur(4px)",
         })}
-        onClick={(e) => e.target === e.currentTarget && commandPaletteOpen.set(false)}
+        onClick={(e) =>
+          e.target === e.currentTarget && commandPaletteOpen.set(false)
+        }
       >
         <div
           class={css({
-            width: '100%',
-            maxWidth: '36rem',
-            backgroundColor: 'var(--colors-background)',
-            borderRadius: '0.75rem',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            border: '1px solid var(--colors-border)',
-            overflow: 'hidden',
+            width: "100%",
+            maxWidth: "36rem",
+            backgroundColor: "var(--colors-background)",
+            borderRadius: "0.75rem",
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+            border: "1px solid var(--colors-border)",
+            overflow: "hidden",
           })}
         >
           {/* Search Input */}
           <div
             class={css({
-              display: 'flex',
-              alignItems: 'center',
-              padding: '0.75rem 1rem',
-              borderBottom: '1px solid var(--colors-border)',
+              display: "flex",
+              alignItems: "center",
+              padding: "0.75rem 1rem",
+              borderBottom: "1px solid var(--colors-border)",
             })}
           >
             <svg
@@ -333,7 +357,11 @@ export function CommandPalette() {
               height="20"
               viewBox="0 0 20 20"
               fill="none"
-              class={css({ color: 'var(--colors-foreground)', opacity: 0.5, marginRight: '0.75rem' })}
+              class={css({
+                color: "var(--colors-foreground)",
+                opacity: 0.5,
+                marginRight: "0.75rem",
+              })}
             >
               <path
                 d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
@@ -349,25 +377,25 @@ export function CommandPalette() {
               placeholder="Search commands, events..."
               class={css({
                 flex: 1,
-                border: 'none',
-                outline: 'none',
-                backgroundColor: 'transparent',
-                color: 'var(--colors-foreground)',
-                fontSize: '1rem',
-                '&::placeholder': {
-                  color: 'var(--colors-foreground)',
+                border: "none",
+                outline: "none",
+                backgroundColor: "transparent",
+                color: "var(--colors-foreground)",
+                fontSize: "1rem",
+                "&::placeholder": {
+                  color: "var(--colors-foreground)",
                   opacity: 0.5,
                 },
               })}
             />
             <kbd
               class={css({
-                padding: '0.25rem 0.5rem',
-                borderRadius: '0.25rem',
-                backgroundColor: 'var(--colors-muted)',
-                color: 'var(--colors-foreground)',
-                fontSize: '0.75rem',
-                fontFamily: 'monospace',
+                padding: "0.25rem 0.5rem",
+                borderRadius: "0.25rem",
+                backgroundColor: "var(--colors-muted)",
+                color: "var(--colors-foreground)",
+                fontSize: "0.75rem",
+                fontFamily: "monospace",
               })}
             >
               ESC
@@ -377,8 +405,8 @@ export function CommandPalette() {
           {/* Results */}
           <div
             class={css({
-              maxHeight: '20rem',
-              overflowY: 'auto',
+              maxHeight: "20rem",
+              overflowY: "auto",
             })}
           >
             <Show
@@ -386,9 +414,9 @@ export function CommandPalette() {
               fallback={
                 <div
                   class={css({
-                    padding: '2rem',
-                    textAlign: 'center',
-                    color: 'var(--colors-foreground)',
+                    padding: "2rem",
+                    textAlign: "center",
+                    color: "var(--colors-foreground)",
                     opacity: 0.5,
                   })}
                 >
@@ -403,31 +431,34 @@ export function CommandPalette() {
                     onClick={() => command.action()}
                     onMouseEnter={() => setSelectedIndex(index())}
                     class={css({
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.75rem',
-                      padding: '0.75rem 1rem',
-                      backgroundColor: selectedIndex() === index() ? 'var(--colors-muted)' : 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      transition: 'background-color 0.1s ease',
-                      '&:hover': {
-                        backgroundColor: 'var(--colors-muted)',
+                      width: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                      padding: "0.75rem 1rem",
+                      backgroundColor:
+                        selectedIndex() === index()
+                          ? "var(--colors-muted)"
+                          : "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      textAlign: "left",
+                      transition: "background-color 0.1s ease",
+                      "&:hover": {
+                        backgroundColor: "var(--colors-muted)",
                       },
                     })}
                   >
                     <span
                       class={css({
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '2rem',
-                        height: '2rem',
-                        borderRadius: '0.375rem',
-                        backgroundColor: 'var(--colors-muted-hover)',
-                        fontSize: '0.875rem',
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: "2rem",
+                        height: "2rem",
+                        borderRadius: "0.375rem",
+                        backgroundColor: "var(--colors-muted-hover)",
+                        fontSize: "0.875rem",
                       })}
                     >
                       {categoryIcons[command.category]}
@@ -435,12 +466,12 @@ export function CommandPalette() {
                     <div class={css({ flex: 1, minWidth: 0 })}>
                       <div
                         class={css({
-                          fontSize: '0.875rem',
-                          fontWeight: '500',
-                          color: 'var(--colors-foreground)',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
+                          fontSize: "0.875rem",
+                          fontWeight: "500",
+                          color: "var(--colors-foreground)",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
                         })}
                       >
                         {command.title}
@@ -448,12 +479,12 @@ export function CommandPalette() {
                       <Show when={command.description}>
                         <div
                           class={css({
-                            fontSize: '0.75rem',
-                            color: 'var(--colors-foreground)',
+                            fontSize: "0.75rem",
+                            color: "var(--colors-foreground)",
                             opacity: 0.6,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
                           })}
                         >
                           {command.description}
@@ -462,11 +493,11 @@ export function CommandPalette() {
                     </div>
                     <span
                       class={css({
-                        fontSize: '0.625rem',
-                        color: 'var(--colors-foreground)',
+                        fontSize: "0.625rem",
+                        color: "var(--colors-foreground)",
                         opacity: 0.4,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em',
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
                       })}
                     >
                       {categoryLabels[command.category]}
@@ -480,18 +511,18 @@ export function CommandPalette() {
           {/* Footer */}
           <div
             class={css({
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '0.5rem 1rem',
-              borderTop: '1px solid var(--colors-border)',
-              backgroundColor: 'var(--colors-muted)',
-              fontSize: '0.75rem',
-              color: 'var(--colors-foreground)',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "0.5rem 1rem",
+              borderTop: "1px solid var(--colors-border)",
+              backgroundColor: "var(--colors-muted)",
+              fontSize: "0.75rem",
+              color: "var(--colors-foreground)",
               opacity: 0.6,
             })}
           >
-            <div class={css({ display: 'flex', gap: '1rem' })}>
+            <div class={css({ display: "flex", gap: "1rem" })}>
               <span>↑↓ Navigate</span>
               <span>↵ Select</span>
               <span>esc Close</span>
@@ -506,7 +537,7 @@ export function CommandPalette() {
 
 function formatEventTime(event: CalendarEvent): string {
   try {
-    const start = Temporal.PlainDateTime.from(event.startTime.replace('Z', ''));
+    const start = Temporal.PlainDateTime.from(event.startTime.replace("Z", ""));
     const date = start.toPlainDate();
     const time = start.toPlainTime();
 
@@ -515,20 +546,26 @@ function formatEventTime(event: CalendarEvent): string {
 
     let dateStr: string;
     if (date.equals(today)) {
-      dateStr = 'Today';
+      dateStr = "Today";
     } else if (date.equals(tomorrow)) {
-      dateStr = 'Tomorrow';
+      dateStr = "Tomorrow";
     } else {
-      dateStr = date.toLocaleString('en-US', { month: 'short', day: 'numeric' });
+      dateStr = date.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
     }
 
     if (event.isAllDay) {
       return `${dateStr} (All day)`;
     }
 
-    const timeStr = time.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit' });
+    const timeStr = time.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    });
     return `${dateStr} at ${timeStr}`;
   } catch {
-    return '';
+    return "";
   }
 }

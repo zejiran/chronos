@@ -1,5 +1,5 @@
 import { atom, map, computed } from "nanostores";
-import { persistentAtom, persistentMap } from "@nanostores/persistent";
+import { persistentAtom } from "@nanostores/persistent";
 import type {
   CalendarEvent,
   Calendar,
@@ -36,16 +36,6 @@ export const accountModalOpen = atom<boolean>(false);
 // Selected event for editing
 export const selectedEventId = atom<string | null>(null);
 
-// Computed selected event
-export const selectedEvent = computed([selectedEventId, events], (id, evts) => {
-  if (!id) return null;
-  return evts[id] || null;
-});
-
-export function setSelectedEvent(event: CalendarEvent | null): void {
-  selectedEventId.set(event?.id || null);
-}
-
 // Search
 export const searchQuery = atom<string>("");
 export const searchResults = atom<CalendarEvent[]>([]);
@@ -54,6 +44,16 @@ export const searchResults = atom<CalendarEvent[]>([]);
 export const events = map<Record<string, CalendarEvent>>({});
 export const calendars = map<Record<string, Calendar>>({});
 export const accounts = map<Record<string, Account>>({});
+
+// Computed selected event (must be after events declaration)
+export const selectedEvent = computed([selectedEventId, events], (id, evts) => {
+  if (!id) return null;
+  return evts[id] || null;
+});
+
+export function setSelectedEvent(event: CalendarEvent | null): void {
+  selectedEventId.set(event?.id || null);
+}
 
 // Settings
 export const settings = atom<Settings | null>(null);
