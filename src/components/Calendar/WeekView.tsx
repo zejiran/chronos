@@ -102,14 +102,16 @@ export function WeekView() {
         class={css({
           display: "grid",
           gridTemplateColumns: "60px repeat(7, 1fr)",
-          borderBottom: "1px solid {colors.border}",
+          borderBottom: "1px solid",
+          borderColor: "border",
           flexShrink: 0,
         })}
       >
         {/* Empty corner */}
         <div
           class={css({
-            borderRight: "1px solid {colors.border}",
+            borderRight: "1px solid",
+            borderColor: "border",
             backgroundColor: "muted",
           })}
         />
@@ -125,14 +127,16 @@ export function WeekView() {
                 class={css({
                   textAlign: "center",
                   padding: "sm",
-                  borderRight: "1px solid {colors.border}",
+                  borderRight: "1px solid",
+                  borderColor: "border",
                   backgroundColor: "muted",
                 })}
               >
                 <div
                   class={css({
                     fontSize: "xs",
-                    color: "mutedHover",
+                    color: "foreground",
+                    opacity: 0.5,
                     marginBottom: "xs",
                   })}
                 >
@@ -166,16 +170,19 @@ export function WeekView() {
         class={css({
           display: "grid",
           gridTemplateColumns: "60px repeat(7, 1fr)",
-          borderBottom: "1px solid {colors.border}",
+          borderBottom: "1px solid",
+          borderColor: "border",
           minHeight: "40px",
           flexShrink: 0,
         })}
       >
         <div
           class={css({
-            borderRight: "1px solid {colors.border}",
+            borderRight: "1px solid",
+            borderColor: "border",
             fontSize: "xs",
-            color: "mutedHover",
+            color: "foreground",
+            opacity: 0.5,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -190,7 +197,8 @@ export function WeekView() {
             return (
               <div
                 class={css({
-                  borderRight: "1px solid {colors.border}",
+                  borderRight: "1px solid",
+                  borderColor: "border",
                   padding: "xs",
                   display: "flex",
                   flexDirection: "column",
@@ -231,108 +239,99 @@ export function WeekView() {
         class={css({
           flex: 1,
           overflow: "auto",
-          "&::-webkit-scrollbar": {
-            width: "8px",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "border",
-            borderRadius: "full",
-          },
         })}
       >
-        <div
-          class={css({
-            display: "grid",
-            gridTemplateColumns: "60px repeat(7, 1fr)",
-          })}
-        >
-          <For each={hours}>
-            {(hour) => (
-              <>
-                {/* Time label */}
-                <div
-                  class={css({
-                    height: "48px",
-                    borderRight: "1px solid {colors.border}",
-                    borderBottom: "1px solid {colors.border}",
-                    fontSize: "xs",
-                    color: "mutedHover",
-                    display: "flex",
-                    alignItems: "flex-start",
-                    justifyContent: "flex-end",
-                    paddingRight: "sm",
-                    paddingTop: "2px",
-                  })}
-                >
-                  {hour === 0
-                    ? ""
-                    : formatTime(
-                        `${hour.toString().padStart(2, "0")}:00`,
-                        "12h",
-                      )}
-                </div>
+        <For each={hours}>
+          {(hour) => (
+            <div
+              class={css({
+                display: "grid",
+                gridTemplateColumns: "60px repeat(7, 1fr)",
+              })}
+            >
+              {/* Time label */}
+              <div
+                class={css({
+                  height: "48px",
+                  borderRight: "1px solid",
+                  borderBottom: "1px solid",
+                  borderColor: "border",
+                  fontSize: "xs",
+                  color: "foreground",
+                  opacity: 0.5,
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "flex-end",
+                  paddingRight: "sm",
+                  paddingTop: "2px",
+                })}
+              >
+                {hour === 0
+                  ? ""
+                  : formatTime(`${hour.toString().padStart(2, "0")}:00`, "12h")}
+              </div>
 
-                {/* Day cells */}
-                <For each={weekDates()}>
-                  {(date) => {
-                    const cellEvents = createMemo(() =>
-                      getEventsForDateAndHour(date, hour),
-                    );
-                    const isTodayDate = isToday(date);
+              {/* Day cells */}
+              <For each={weekDates()}>
+                {(date) => {
+                  const cellEvents = createMemo(() =>
+                    getEventsForDateAndHour(date, hour),
+                  );
+                  const isTodayDate = isToday(date);
 
-                    return (
-                      <div
-                        class={css({
-                          height: "48px",
-                          borderRight: "1px solid {colors.border}",
-                          borderBottom: "1px solid {colors.border}",
-                          position: "relative",
-                          cursor: "pointer",
-                          backgroundColor: isTodayDate
-                            ? "color-mix(in srgb, {colors.primary} 5%, transparent)"
-                            : "transparent",
-                          _hover: {
-                            backgroundColor: "hover",
-                          },
-                        })}
-                        onClick={() => handleCellClick(date, hour)}
-                      >
-                        <For each={cellEvents()}>
-                          {(event) => (
-                            <div
-                              class={css({
-                                position: "absolute",
-                                top: "2px",
-                                left: "2px",
-                                right: "2px",
-                                fontSize: "xs",
-                                padding: "2px 4px",
-                                borderRadius: "sm",
-                                cursor: "pointer",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                                zIndex: 1,
-                              })}
-                              style={{
-                                "background-color":
-                                  event.color || "var(--colors-primary)",
-                                color: "white",
-                              }}
-                              onClick={(e) => handleEventClick(event, e)}
-                            >
-                              {formatTime(event.startTime, "12h")} {event.title}
-                            </div>
-                          )}
-                        </For>
-                      </div>
-                    );
-                  }}
-                </For>
-              </>
-            )}
-          </For>
-        </div>
+                  return (
+                    <div
+                      class={css({
+                        height: "48px",
+                        borderRight: "1px solid",
+                        borderBottom: "1px solid",
+                        borderColor: "border",
+                        position: "relative",
+                        cursor: "pointer",
+                        backgroundColor: isTodayDate
+                          ? "rgba(137, 180, 250, 0.1)"
+                          : "transparent",
+                        _hover: {
+                          backgroundColor: "hover",
+                        },
+                      })}
+                      onClick={() => handleCellClick(date, hour)}
+                    >
+                      <For each={cellEvents()}>
+                        {(event) => (
+                          <div
+                            class={css({
+                              position: "absolute",
+                              top: "2px",
+                              left: "2px",
+                              right: "2px",
+                              fontSize: "xs",
+                              padding: "2px 4px",
+                              borderRadius: "sm",
+                              cursor: "pointer",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              zIndex: 1,
+                            })}
+                            style={{
+                              "background-color":
+                                event.color || "var(--colors-primary)",
+                              color: "white",
+                            }}
+                            onClick={(e) => handleEventClick(event, e)}
+                          >
+                            {formatTime(event.startTime, "12h")} {event.title}
+                          </div>
+                        )}
+                      </For>
+                    </div>
+                  );
+                }}
+              </For>
+            </div>
+          )}
+        </For>
       </div>
     </div>
   );
