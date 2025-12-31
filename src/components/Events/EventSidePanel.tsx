@@ -2,12 +2,7 @@ import { createSignal, createEffect, For, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
 import { Button } from "../shared/Button";
 import { Input } from "../shared/Input";
-import {
-  calendars,
-  addEvent,
-  updateEvent,
-  deleteEvent,
-} from "../../stores";
+import { calendars, addEvent, updateEvent, deleteEvent } from "../../stores";
 import { useStore } from "@nanostores/solid";
 import {
   createEvent,
@@ -16,8 +11,6 @@ import {
 } from "../../lib/tauri";
 import type { CalendarEvent, RecurrenceRule } from "../../types";
 import { X } from "lucide-solid";
-
-const DEFAULT_DURATION_MINUTES = 60;
 
 interface EventFormData {
   title: string;
@@ -46,7 +39,9 @@ function eventToFormData(event: CalendarEvent): EventFormData {
   const start = event.startTime.includes("T")
     ? new Date(event.startTime)
     : new Date();
-  const end = event.endTime.includes("T") ? new Date(event.endTime) : new Date();
+  const end = event.endTime.includes("T")
+    ? new Date(event.endTime)
+    : new Date();
 
   return {
     title: event.title,
@@ -160,7 +155,10 @@ export function EventSidePanel(props: EventSidePanelProps) {
           allDay: eventData.allDay,
           color: eventData.color,
         });
-        updateEvent(props.existingEvent!.id, updated as unknown as CalendarEvent);
+        updateEvent(
+          props.existingEvent!.id,
+          updated as unknown as CalendarEvent,
+        );
       } else {
         const created = await createEvent(eventData);
         addEvent(created as unknown as CalendarEvent);
@@ -309,7 +307,10 @@ export function EventSidePanel(props: EventSidePanelProps) {
               }}
               class={css({
                 width: "100%",
-                paddingTop: "8px", paddingBottom: "8px", paddingLeft: "12px", paddingRight: "12px",
+                paddingTop: "8px",
+                paddingBottom: "8px",
+                paddingLeft: "12px",
+                paddingRight: "12px",
                 borderRadius: "6px",
                 border: "1px solid",
                 borderColor: "border",
@@ -438,7 +439,10 @@ export function EventSidePanel(props: EventSidePanelProps) {
               rows={4}
               class={css({
                 width: "100%",
-                paddingTop: "10px", paddingBottom: "10px", paddingLeft: "12px", paddingRight: "12px",
+                paddingTop: "10px",
+                paddingBottom: "10px",
+                paddingLeft: "12px",
+                paddingRight: "12px",
                 borderRadius: "6px",
                 border: "1px solid",
                 borderColor: "border",

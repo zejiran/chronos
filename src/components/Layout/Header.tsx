@@ -1,7 +1,6 @@
 import { createMemo, Show } from "solid-js";
 import { useStore } from "@nanostores/solid";
 import { css } from "../../../styled-system/css";
-import { Button } from "../shared/Button";
 import {
   selectedDate,
   currentView,
@@ -19,10 +18,8 @@ import { formatDate, getMonthName } from "../../lib/date";
 import { Temporal } from "@js-temporal/polyfill";
 import type { CalendarView } from "../../types";
 import {
-  Menu,
   ChevronLeft,
   ChevronRight,
-  Calendar,
   Search,
   Plus,
   RefreshCw,
@@ -273,13 +270,11 @@ export function Header() {
               transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
               backgroundColor:
                 $currentView() === view.id ? "primary" : "transparent",
-              color:
-                $currentView() === view.id ? "background" : "mutedHover",
+              color: $currentView() === view.id ? "background" : "mutedHover",
               _hover: {
                 backgroundColor:
                   $currentView() === view.id ? "primaryHover" : "hover",
-                color:
-                  $currentView() === view.id ? "background" : "foreground",
+                color: $currentView() === view.id ? "background" : "foreground",
               },
               _active: {
                 transform: "scale(0.97)",
