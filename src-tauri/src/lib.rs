@@ -1,10 +1,10 @@
 mod commands;
 mod db;
 mod models;
+#[allow(dead_code)]
 mod sync;
+#[allow(dead_code)]
 mod utils;
-
-use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

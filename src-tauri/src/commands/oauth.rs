@@ -26,7 +26,7 @@ pub struct OAuthTokenResult {
 
 #[tauri::command]
 pub async fn start_google_oauth(
-    app: AppHandle,
+    _app: AppHandle,
     client_id: String,
     client_secret: String,
     redirect_uri: String,
@@ -59,7 +59,7 @@ pub async fn start_google_oauth(
 
 #[tauri::command]
 pub async fn start_microsoft_oauth(
-    app: AppHandle,
+    _app: AppHandle,
     client_id: String,
     client_secret: String,
     redirect_uri: String,
@@ -87,7 +87,7 @@ pub async fn start_microsoft_oauth(
 
 #[tauri::command]
 pub async fn handle_oauth_callback(
-    app: AppHandle,
+    _app: AppHandle,
     provider: String,
     code: String,
     client_id: String,

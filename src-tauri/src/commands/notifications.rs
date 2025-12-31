@@ -52,15 +52,15 @@ pub async fn schedule_notification(
 }
 
 #[tauri::command]
-pub async fn cancel_notification(app: AppHandle, notification_id: String) -> Result<(), String> {
+pub async fn cancel_notification(_app: AppHandle, _notification_id: String) -> Result<(), String> {
     // TODO: Remove from database
     Ok(())
 }
 
 #[tauri::command]
 pub async fn get_upcoming_notifications(
-    app: AppHandle,
-    hours: i64,
+    _app: AppHandle,
+    _hours: i64,
 ) -> Result<Vec<ScheduledNotification>, String> {
     // TODO: Query from database
     Ok(Vec::new())
@@ -75,7 +75,8 @@ fn show_notification(app: &AppHandle, title: &str, body: &str) -> Result<(), Str
         .map_err(|e| format!("Failed to show notification: {}", e))
 }
 
-pub async fn start_notification_checker(app: AppHandle) {
+#[allow(dead_code)]
+pub async fn start_notification_checker(_app: AppHandle) {
     use tokio::time::{interval, Duration};
 
     let mut check_interval = interval(Duration::from_secs(30));

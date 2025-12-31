@@ -2,17 +2,16 @@ use crate::models::{
     Calendar, CreateCalendarRequest, CreateEventRequest, Event, EventStatus, EventVisibility,
     UpdateCalendarRequest, UpdateEventRequest,
 };
-use chrono::{DateTime, Utc};
-use tauri::{AppHandle, State};
-use tauri_plugin_sql::{Migration, MigrationKind};
+use chrono::Utc;
+use tauri::AppHandle;
 use uuid::Uuid;
 
 #[tauri::command]
 pub async fn get_events(
-    app: AppHandle,
-    calendar_id: Option<String>,
-    start: Option<String>,
-    end: Option<String>,
+    _app: AppHandle,
+    _calendar_id: Option<String>,
+    _start: Option<String>,
+    _end: Option<String>,
 ) -> Result<Vec<Event>, String> {
     // For now, return empty array - will be implemented with actual SQL queries
     // when the database connection is properly set up
@@ -20,12 +19,12 @@ pub async fn get_events(
 }
 
 #[tauri::command]
-pub async fn get_event(app: AppHandle, event_id: String) -> Result<Option<Event>, String> {
+pub async fn get_event(_app: AppHandle, _event_id: String) -> Result<Option<Event>, String> {
     Ok(None)
 }
 
 #[tauri::command]
-pub async fn create_event(app: AppHandle, request: CreateEventRequest) -> Result<Event, String> {
+pub async fn create_event(_app: AppHandle, request: CreateEventRequest) -> Result<Event, String> {
     let now = Utc::now();
     let event = Event {
         id: Uuid::new_v4().to_string(),
@@ -56,24 +55,24 @@ pub async fn create_event(app: AppHandle, request: CreateEventRequest) -> Result
 
 #[tauri::command]
 pub async fn update_event(
-    app: AppHandle,
-    event_id: String,
-    request: UpdateEventRequest,
+    _app: AppHandle,
+    _event_id: String,
+    _request: UpdateEventRequest,
 ) -> Result<Event, String> {
     // TODO: Implement with actual database update
     Err("Not implemented yet".to_string())
 }
 
 #[tauri::command]
-pub async fn delete_event(app: AppHandle, event_id: String) -> Result<(), String> {
+pub async fn delete_event(_app: AppHandle, _event_id: String) -> Result<(), String> {
     // TODO: Implement with actual database delete
     Ok(())
 }
 
 #[tauri::command]
 pub async fn get_calendars(
-    app: AppHandle,
-    account_id: Option<String>,
+    _app: AppHandle,
+    _account_id: Option<String>,
 ) -> Result<Vec<Calendar>, String> {
     // Return default local calendar for now
     Ok(vec![Calendar::local_calendar()])
@@ -81,7 +80,7 @@ pub async fn get_calendars(
 
 #[tauri::command]
 pub async fn create_calendar(
-    app: AppHandle,
+    _app: AppHandle,
     request: CreateCalendarRequest,
 ) -> Result<Calendar, String> {
     let calendar = Calendar::new(request.account_id, request.name, request.color);
@@ -93,16 +92,16 @@ pub async fn create_calendar(
 
 #[tauri::command]
 pub async fn update_calendar(
-    app: AppHandle,
-    calendar_id: String,
-    request: UpdateCalendarRequest,
+    _app: AppHandle,
+    _calendar_id: String,
+    _request: UpdateCalendarRequest,
 ) -> Result<Calendar, String> {
     // TODO: Implement with actual database update
     Err("Not implemented yet".to_string())
 }
 
 #[tauri::command]
-pub async fn delete_calendar(app: AppHandle, calendar_id: String) -> Result<(), String> {
+pub async fn delete_calendar(_app: AppHandle, _calendar_id: String) -> Result<(), String> {
     // TODO: Implement with actual database delete
     Ok(())
 }

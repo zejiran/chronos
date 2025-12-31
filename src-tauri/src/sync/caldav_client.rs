@@ -1,6 +1,8 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
 use anyhow::Result;
 use reqwest::{Client, Method, StatusCode};
-use std::collections::HashMap;
 
 pub struct CalDAVClient {
     client: Client,
@@ -124,7 +126,7 @@ impl CalDAVClient {
     </c:filter>
 </c:calendar-query>"#,
             start, end
-);
+        );
 
         let url = format!("{}{}", self.base_url, calendar_href);
 
@@ -261,7 +263,7 @@ impl CalDAVClient {
     </d:prop>
 </d:sync-collection>"#,
             sync_token_element
-);
+        );
 
         let url = format!("{}{}", self.base_url, calendar_href);
 

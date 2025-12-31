@@ -60,6 +60,7 @@ pub enum EventVisibility {
     Default,
 }
 
+#[allow(dead_code)]
 impl Event {
     pub fn new(
         calendar_id: String,

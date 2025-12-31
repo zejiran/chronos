@@ -1,5 +1,4 @@
 use regex::Regex;
-use std::process::Command;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq)]
 #[serde(rename_all = "lowercase")]

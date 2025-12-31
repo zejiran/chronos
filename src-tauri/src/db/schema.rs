@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 pub const CREATE_TABLES_SQL: &str = r#"
 -- Accounts table
 CREATE TABLE IF NOT EXISTS accounts (

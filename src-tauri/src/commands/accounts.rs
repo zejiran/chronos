@@ -1,15 +1,14 @@
-use crate::models::{Account, AddAccountRequest, Provider, SyncStatus};
-use chrono::Utc;
+use crate::models::{Account, AddAccountRequest};
 use tauri::AppHandle;
 
 #[tauri::command]
-pub async fn get_accounts(app: AppHandle) -> Result<Vec<Account>, String> {
+pub async fn get_accounts(_app: AppHandle) -> Result<Vec<Account>, String> {
     // Return local account by default
     Ok(vec![Account::local_account()])
 }
 
 #[tauri::command]
-pub async fn add_account(app: AppHandle, request: AddAccountRequest) -> Result<Account, String> {
+pub async fn add_account(_app: AppHandle, request: AddAccountRequest) -> Result<Account, String> {
     let account = Account::new(request.provider, request.email);
 
     // TODO: Store credentials securely using keyring
@@ -19,14 +18,14 @@ pub async fn add_account(app: AppHandle, request: AddAccountRequest) -> Result<A
 }
 
 #[tauri::command]
-pub async fn remove_account(app: AppHandle, account_id: String) -> Result<(), String> {
+pub async fn remove_account(_app: AppHandle, _account_id: String) -> Result<(), String> {
     // TODO: Remove from database
     // TODO: Remove credentials from keyring
     Ok(())
 }
 
 #[tauri::command]
-pub async fn sync_account(app: AppHandle, account_id: String) -> Result<SyncResult, String> {
+pub async fn sync_account(_app: AppHandle, _account_id: String) -> Result<SyncResult, String> {
     // TODO: Implement actual sync logic
     Ok(SyncResult {
         success: true,
@@ -36,7 +35,7 @@ pub async fn sync_account(app: AppHandle, account_id: String) -> Result<SyncResu
 }
 
 #[tauri::command]
-pub async fn sync_all_accounts(app: AppHandle) -> Result<Vec<SyncResult>, String> {
+pub async fn sync_all_accounts(_app: AppHandle) -> Result<Vec<SyncResult>, String> {
     // TODO: Sync all accounts
     Ok(Vec::new())
 }

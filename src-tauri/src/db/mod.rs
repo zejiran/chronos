@@ -1,7 +1,11 @@
+#[allow(dead_code)]
 mod queries;
+#[allow(dead_code)]
 mod schema;
 
+#[allow(unused_imports)]
 pub use queries::*;
+#[allow(unused_imports)]
 pub use schema::*;
 
 use anyhow::Result;
@@ -35,6 +39,7 @@ pub fn get_database_path(app: &AppHandle) -> Result<PathBuf> {
     Ok(app_data_dir.join("chronos.db"))
 }
 
+#[allow(dead_code)]
 pub fn get_database_url(app: &AppHandle) -> Result<String> {
     let db_path = get_database_path(app)?;
     Ok(format!("sqlite:{}", db_path.to_string_lossy()))

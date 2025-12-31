@@ -1,7 +1,9 @@
-use crate::models::{Account, Event, Provider, SyncStatus};
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
+use crate::models::{Account, Event, Provider};
 use anyhow::Result;
 use chrono::{DateTime, Utc};
-use std::collections::HashMap;
 use tokio::time::{interval, Duration};
 
 #[derive(Debug, Clone)]

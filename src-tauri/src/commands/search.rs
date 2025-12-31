@@ -10,11 +10,11 @@ pub struct SearchResult {
 
 #[tauri::command]
 pub async fn search_events(
-    app: AppHandle,
-    query: String,
+    _app: AppHandle,
+    _query: String,
     limit: Option<usize>,
 ) -> Result<SearchResult, String> {
-    let limit = limit.unwrap_or(50);
+    let _limit = limit.unwrap_or(50);
 
     // TODO: Implement full-text search using SQLite FTS5
     // For now, return empty results

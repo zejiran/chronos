@@ -40,7 +40,7 @@
     "category": "Productivity",
     "shortDescription": "A beautiful, performant calendar application",
     "longDescription": "Chronos is a cross-platform, open-source calendar application that rivals commercial products like Notion Calendar and Cron. Built with performance as the top priority using Tauri and Solid.js.",
-    "copyright": "Copyright (c) 2024 Juan Alegría",
+    "copyright": "Copyright (c) 2025 Juan Alegría",
     "license": "MIT"
   },
   "plugins": {
