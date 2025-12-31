@@ -35,9 +35,10 @@ export function WeekView() {
   const [dragStart, setDragStart] = createSignal<{ date: Temporal.PlainDate; hour: number } | null>(null);
   const [dragEnd, setDragEnd] = createSignal<{ date: Temporal.PlainDate; hour: number } | null>(null);
 
-  const getEventsForDateAndHour = (
+  const HOUR_HEIGHT = 64; // Height of each hour cell in pixels
+
+  const getEventsForDate = (
     date: Temporal.PlainDate,
-    _hour: number,
   ): CalendarEvent[] => {
     const visibleCalendarIds = new Set(
       Object.values($calendars())
@@ -53,13 +54,31 @@ export function WeekView() {
         const eventStart = Temporal.PlainDateTime.from(
           event.startTime.replace("Z", ""),
         );
-        return (
-          eventStart.toPlainDate().equals(date) && eventStart.hour === _hour
-        );
+        return eventStart.toPlainDate().equals(date);
       } catch {
         return false;
       }
     });
+  };
+
+  const getEventPosition = (event: CalendarEvent): { top: number; height: number } => {
+    try {
+      const eventStart = Temporal.PlainDateTime.from(event.startTime.replace("Z", ""));
+      const eventEnd = Temporal.PlainDateTime.from(event.endTime.replace("Z", ""));
+
+      // Calculate top position based on start time
+      const startMinutes = eventStart.hour * 60 + eventStart.minute;
+      const top = (startMinutes / 60) * HOUR_HEIGHT;
+
+      // Calculate height based on duration
+      const endMinutes = eventEnd.hour * 60 + eventEnd.minute;
+      const durationMinutes = endMinutes - startMinutes;
+      const height = Math.max((durationMinutes / 60) * HOUR_HEIGHT, 20); // Minimum 20px height
+
+      return { top, height };
+    } catch {
+      return { top: 0, height: HOUR_HEIGHT };
+    }
   };
 
   const getAllDayEvents = (date: Temporal.PlainDate): CalendarEvent[] => {
@@ -383,61 +402,102 @@ export function WeekView() {
             </Index>
           </div>
 
-          {/* Time grid */}
-          <For each={hours}>
-            {(hour) => (
-              <div
-                class={css({
-                  display: "grid",
-                  gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
-                })}
-              >
-                <Index each={weekDates()}>
-                  {(date, index) => {
-                    const d = date();
-                    const cellEvents = createMemo(() =>
-                      getEventsForDateAndHour(d, hour),
-                    );
-                    const isTodayDate = isToday(d);
-                    const isLastColumn = index === 6;
-                    const isSelected = createMemo(() => isCellInSelection(d, hour));
+          {/* Time grid container with overlaid events */}
+          <div
+            class={css({
+              position: "relative",
+            })}
+          >
+            {/* Hour grid rows */}
+            <For each={hours}>
+              {(hour) => (
+                <div
+                  class={css({
+                    display: "grid",
+                    gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
+                  })}
+                >
+                  <Index each={weekDates()}>
+                    {(date, index) => {
+                      const d = date();
+                      const isTodayDate = isToday(d);
+                      const isLastColumn = index === 6;
+                      const isSelected = createMemo(() => isCellInSelection(d, hour));
 
-                    return (
-                      <div
-                        class={css({
-                          height: "64px",
-                          borderRight: "1px solid",
-                          borderBottom: "1px solid",
-                          borderColor: "border",
-                          position: "relative",
-                          cursor: "pointer",
-                          backgroundColor: "background",
-                          transition: "background-color 150ms",
-                          _hover: {
-                            backgroundColor: "hover",
-                          },
-                        })}
-                        style={{
-                          "border-right": isLastColumn ? "none" : undefined,
-                          "background-color": isSelected()
-                            ? "rgba(59, 130, 246, 0.15)"
-                            : isTodayDate
-                              ? "var(--colors-muted)"
-                              : undefined,
-                        }}
-                        onMouseDown={(e) => {
-                          e.preventDefault();
-                          handleMouseDown(d, hour);
-                        }}
-                        onMouseEnter={() => handleMouseEnter(d, hour)}
-                        onClick={() => !isDragging() && handleCellClick(d, hour)}
-                      >
-                        <For each={cellEvents()}>
-                          {(event) => (
+                      return (
+                        <div
+                          class={css({
+                            height: "64px",
+                            borderRight: "1px solid",
+                            borderBottom: "1px solid",
+                            borderColor: "border",
+                            position: "relative",
+                            cursor: "pointer",
+                            backgroundColor: "background",
+                            transition: "background-color 150ms",
+                            _hover: {
+                              backgroundColor: "hover",
+                            },
+                          })}
+                          style={{
+                            "border-right": isLastColumn ? "none" : undefined,
+                            "background-color": isSelected()
+                              ? "rgba(59, 130, 246, 0.15)"
+                              : isTodayDate
+                                ? "var(--colors-muted)"
+                                : undefined,
+                          }}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            handleMouseDown(d, hour);
+                          }}
+                          onMouseEnter={() => handleMouseEnter(d, hour)}
+                          onClick={() => !isDragging() && handleCellClick(d, hour)}
+                        />
+                      );
+                    }}
+                  </Index>
+                </div>
+              )}
+            </For>
+
+            {/* Events overlay - positioned absolutely over the grid */}
+            <div
+              class={css({
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                pointerEvents: "none",
+                display: "grid",
+                gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
+              })}
+            >
+              <Index each={weekDates()}>
+                {(date, index) => {
+                  const d = date();
+                  const dayEvents = createMemo(() => getEventsForDate(d));
+                  const isLastColumn = index === 6;
+
+                  return (
+                    <div
+                      class={css({
+                        position: "relative",
+                        borderRight: "1px solid",
+                        borderColor: "transparent",
+                      })}
+                      style={{
+                        "border-right": isLastColumn ? "none" : undefined,
+                      }}
+                    >
+                      <For each={dayEvents()}>
+                        {(event) => {
+                          const position = getEventPosition(event);
+                          return (
                             <div
                               class={css({
                                 position: "absolute",
-                                top: "2px",
                                 left: "2px",
                                 right: "2px",
                                 fontSize: "11px",
@@ -445,10 +505,9 @@ export function WeekView() {
                                 borderRadius: "4px",
                                 cursor: "pointer",
                                 overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
                                 zIndex: 1,
                                 transition: "opacity 150ms",
+                                pointerEvents: "auto",
                                 _hover: {
                                   opacity: 0.8,
                                 },
@@ -457,6 +516,8 @@ export function WeekView() {
                                 "background-color":
                                   event.color || "var(--colors-primary)",
                                 color: "white",
+                                top: `${position.top}px`,
+                                height: `${position.height}px`,
                               }}
                               onClick={(e) => handleEventClick(event, e)}
                             >
@@ -465,15 +526,15 @@ export function WeekView() {
                               </strong>{" "}
                               {event.title}
                             </div>
-                          )}
-                        </For>
-                      </div>
-                    );
-                  }}
-                </Index>
-              </div>
-            )}
-          </For>
+                          );
+                        }}
+                      </For>
+                    </div>
+                  );
+                }}
+              </Index>
+            </div>
+          </div>
         </div>
       </div>
     </div>
