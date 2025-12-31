@@ -1,9 +1,11 @@
 import { onMount, onCleanup } from "solid-js";
+import { useStore } from "@nanostores/solid";
 import { css } from "../styled-system/css";
 import { Header } from "./components/Layout/Header";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { CalendarLayout } from "./components/Calendar/CalendarLayout";
 import { EventModal } from "./components/Events/EventModal";
+import { EventSidePanel } from "./components/Events/EventSidePanel";
 import { CommandPalette } from "./components/CommandPalette/CommandPalette";
 import { SettingsModal } from "./components/Settings/SettingsModal";
 import { AccountModal } from "./components/Accounts/AccountModal";
@@ -14,6 +16,8 @@ import {
   commandPaletteOpen,
   eventModalOpen,
   settingsModalOpen,
+  eventSidePanelOpen,
+  eventSidePanelData,
   goToToday,
   goToPrevious,
   goToNext,
@@ -186,6 +190,16 @@ function App() {
       <CommandPalette />
       <SettingsModal />
       <AccountModal />
+
+      {/* Side Panel */}
+      <EventSidePanel
+        isOpen={useStore(eventSidePanelOpen)()}
+        onClose={() => {
+          eventSidePanelOpen.set(false);
+          eventSidePanelData.set(null);
+        }}
+        initialData={useStore(eventSidePanelData)() || undefined}
+      />
     </div>
   );
 }

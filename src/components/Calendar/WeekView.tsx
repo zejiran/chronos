@@ -1,4 +1,4 @@
-import { createMemo, For, Index } from "solid-js";
+import { createMemo, For, Index, createSignal, onCleanup } from "solid-js";
 import { useStore } from "@nanostores/solid";
 import { css } from "../../../styled-system/css";
 import {
@@ -7,6 +7,8 @@ import {
   calendars,
   eventModalOpen,
   selectedEventId,
+  eventSidePanelOpen,
+  eventSidePanelData,
 } from "../../stores";
 import {
   getWeekDates,
@@ -27,6 +29,11 @@ export function WeekView() {
   });
 
   const hours = getHoursArray(0, 24);
+
+  // Drag to create state
+  const [isDragging, setIsDragging] = createSignal(false);
+  const [dragStart, setDragStart] = createSignal<{ date: Temporal.PlainDate; hour: number } | null>(null);
+  const [dragEnd, setDragEnd] = createSignal<{ date: Temporal.PlainDate; hour: number } | null>(null);
 
   const getEventsForDateAndHour = (
     date: Temporal.PlainDate,
@@ -86,6 +93,70 @@ export function WeekView() {
   const handleCellClick = (date: Temporal.PlainDate, _hour: number) => {
     selectedDate.set(date.toString());
     void _hour;
+  };
+
+  const handleMouseDown = (date: Temporal.PlainDate, hour: number) => {
+    setIsDragging(true);
+    setDragStart({ date, hour });
+    setDragEnd({ date, hour });
+  };
+
+  const handleMouseEnter = (date: Temporal.PlainDate, hour: number) => {
+    if (isDragging()) {
+      setDragEnd({ date, hour });
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (isDragging() && dragStart() && dragEnd()) {
+      const start = dragStart()!;
+      const end = dragEnd()!;
+
+      // Determine which is earlier
+      const startHour = Math.min(start.hour, end.hour);
+      const endHour = Math.max(start.hour, end.hour) + 1; // +1 for end time
+
+      // Format times
+      const startTime = `${startHour.toString().padStart(2, "0")}:00`;
+      const endTime = `${endHour.toString().padStart(2, "0")}:00`;
+
+      // Open side panel with the selected time range
+      eventSidePanelData.set({
+        startDate: start.date.toString(),
+        startTime: startTime,
+        endDate: end.date.toString(),
+        endTime: endTime,
+        isAllDay: false,
+      });
+      eventSidePanelOpen.set(true);
+    }
+
+    setIsDragging(false);
+    setDragStart(null);
+    setDragEnd(null);
+  };
+
+  // Global mouse up handler
+  onCleanup(() => {
+    document.removeEventListener("mouseup", handleMouseUp);
+  });
+
+  document.addEventListener("mouseup", handleMouseUp);
+
+  // Check if a cell is within the drag selection
+  const isCellInSelection = (date: Temporal.PlainDate, hour: number): boolean => {
+    if (!isDragging() || !dragStart() || !dragEnd()) return false;
+
+    const start = dragStart()!;
+    const end = dragEnd()!;
+
+    // For now, only support single-day selections
+    if (!start.date.equals(date) || !end.date.equals(date)) return false;
+
+    const minHour = Math.min(start.hour, end.hour);
+    const maxHour = Math.max(start.hour, end.hour);
+
+    return hour >= minHour && hour <= maxHour;
   };
 
   return (
@@ -326,6 +397,7 @@ export function WeekView() {
                     );
                     const isTodayDate = isToday(d);
                     const isLastColumn = index === 6;
+                    const isSelected = createMemo(() => isCellInSelection(d, hour));
 
                     return (
                       <div
@@ -336,9 +408,7 @@ export function WeekView() {
                           borderColor: "border",
                           position: "relative",
                           cursor: "pointer",
-                          backgroundColor: isTodayDate
-                            ? "muted"
-                            : "background",
+                          backgroundColor: "background",
                           transition: "background-color 150ms",
                           _hover: {
                             backgroundColor: "hover",
@@ -346,8 +416,18 @@ export function WeekView() {
                         })}
                         style={{
                           "border-right": isLastColumn ? "none" : undefined,
+                          "background-color": isSelected()
+                            ? "rgba(59, 130, 246, 0.15)"
+                            : isTodayDate
+                              ? "var(--colors-muted)"
+                              : undefined,
                         }}
-                        onClick={() => handleCellClick(d, hour)}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          handleMouseDown(d, hour);
+                        }}
+                        onMouseEnter={() => handleMouseEnter(d, hour)}
+                        onClick={() => !isDragging() && handleCellClick(d, hour)}
                       >
                         <For each={cellEvents()}>
                           {(event) => (

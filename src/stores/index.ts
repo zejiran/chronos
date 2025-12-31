@@ -32,6 +32,14 @@ export const commandPaletteOpen = atom<boolean>(false);
 export const settingsModalOpen = atom<boolean>(false);
 export const eventModalOpen = atom<boolean>(false);
 export const accountModalOpen = atom<boolean>(false);
+export const eventSidePanelOpen = atom<boolean>(false);
+export const eventSidePanelData = atom<{
+  startDate: string;
+  startTime: string;
+  endDate: string;
+  endTime: string;
+  isAllDay: boolean;
+} | null>(null);
 
 // Selected event for editing
 export const selectedEventId = atom<string | null>(null);
