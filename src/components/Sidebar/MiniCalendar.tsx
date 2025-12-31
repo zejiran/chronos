@@ -46,7 +46,7 @@ export function MiniCalendar() {
   return (
     <div
       class={css({
-        padding: "12px",
+        paddingTop: "12px", paddingBottom: "12px", paddingLeft: "12px", paddingRight: "12px",
         borderRadius: "8px",
         backgroundColor: "muted",
       })}
@@ -121,7 +121,7 @@ export function MiniCalendar() {
           display: "grid",
           gridTemplateColumns: "repeat(7, 1fr)",
           gap: "2px",
-          marginBottom: "6px",
+          marginBottom: "4px",
         })}
       >
         <For each={weekDays}>
@@ -132,7 +132,8 @@ export function MiniCalendar() {
                 fontSize: "10px",
                 fontWeight: "600",
                 color: "mutedHover",
-                padding: "4px 0",
+                paddingTop: "4px",
+                paddingBottom: "4px",
                 textTransform: "uppercase",
                 letterSpacing: "0.05em",
               })}
@@ -165,7 +166,7 @@ export function MiniCalendar() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "12px",
+                  fontSize: "13px",
                   border: "none",
                   borderRadius: "6px",
                   cursor: "pointer",

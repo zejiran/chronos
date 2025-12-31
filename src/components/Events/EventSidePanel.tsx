@@ -199,23 +199,28 @@ export function EventSidePanel(props: EventSidePanelProps) {
         class={css({
           position: "fixed",
           top: "56px", // Below header
-          right: 0,
-          bottom: 0,
-          width: "420px",
+          right: "16px",
+          bottom: "16px",
+          width: "440px",
           backgroundColor: "background",
-          borderLeft: "1px solid",
+          border: "1px solid",
           borderColor: "border",
-          boxShadow: "-4px 0 16px rgba(0, 0, 0, 0.1)",
+          borderRadius: "12px",
+          boxShadow: "-4px 0 24px rgba(0, 0, 0, 0.15)",
           zIndex: 100,
           display: "flex",
           flexDirection: "column",
           animation: "slideInFromRight 250ms cubic-bezier(0.4, 0, 0.2, 1)",
+          overflow: "hidden",
         })}
       >
         {/* Header */}
         <div
           class={css({
-            padding: "20px",
+            paddingTop: "20px",
+            paddingBottom: "20px",
+            paddingLeft: "24px",
+            paddingRight: "24px",
             borderBottom: "1px solid",
             borderColor: "border",
             display: "flex",
@@ -263,10 +268,13 @@ export function EventSidePanel(props: EventSidePanelProps) {
           class={css({
             flex: 1,
             overflow: "auto",
-            padding: "20px",
+            paddingTop: "24px",
+            paddingBottom: "24px",
+            paddingLeft: "24px",
+            paddingRight: "24px",
             display: "flex",
             flexDirection: "column",
-            gap: "16px",
+            gap: "20px",
           })}
         >
           <Input
@@ -299,14 +307,17 @@ export function EventSidePanel(props: EventSidePanelProps) {
               }}
               class={css({
                 width: "100%",
-                padding: "8px 12px",
+                paddingTop: "8px", paddingBottom: "8px", paddingLeft: "12px", paddingRight: "12px",
                 borderRadius: "6px",
                 border: "1px solid",
                 borderColor: "border",
                 backgroundColor: "background",
                 color: "foreground",
                 fontSize: "14px",
+                height: "36px",
                 outline: "none",
+                transition: "all 150ms",
+                cursor: "pointer",
                 _focus: {
                   borderColor: "primary",
                 },
@@ -422,18 +433,21 @@ export function EventSidePanel(props: EventSidePanelProps) {
               value={formData().description}
               onInput={(e) => updateField("description", e.currentTarget.value)}
               placeholder="Add description"
-              rows={3}
+              rows={4}
               class={css({
                 width: "100%",
-                padding: "8px 12px",
+                paddingTop: "10px", paddingBottom: "10px", paddingLeft: "12px", paddingRight: "12px",
                 borderRadius: "6px",
                 border: "1px solid",
                 borderColor: "border",
                 backgroundColor: "background",
                 color: "foreground",
                 fontSize: "14px",
+                lineHeight: "1.5",
                 resize: "vertical",
                 outline: "none",
+                minHeight: "80px",
+                transition: "all 150ms",
                 _focus: {
                   borderColor: "primary",
                 },

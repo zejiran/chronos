@@ -78,16 +78,28 @@ export function Button(props: ButtonProps) {
 
   const sizeStyles = {
     sm: css({
-      padding: '4px 8px',
-      fontSize: 'sm',
+      paddingTop: '6px',
+      paddingBottom: '6px',
+      paddingLeft: '12px',
+      paddingRight: '12px',
+      fontSize: '13px',
+      height: '32px',
     }),
     md: css({
-      padding: '8px 16px',
-      fontSize: 'base',
+      paddingTop: '8px',
+      paddingBottom: '8px',
+      paddingLeft: '16px',
+      paddingRight: '16px',
+      fontSize: '14px',
+      height: '36px',
     }),
     lg: css({
-      padding: '12px 24px',
-      fontSize: 'lg',
+      paddingTop: '12px',
+      paddingBottom: '12px',
+      paddingLeft: '24px',
+      paddingRight: '24px',
+      fontSize: '15px',
+      height: '44px',
     }),
   }
 

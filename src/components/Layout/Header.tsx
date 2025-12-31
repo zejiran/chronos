@@ -75,8 +75,8 @@ export function Header() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 16px",
         paddingLeft: "80px", // Space for macOS traffic lights
+        paddingRight: "20px",
         gap: "16px",
         flexShrink: 0,
         position: "relative",
@@ -87,7 +87,7 @@ export function Header() {
         class={css({
           display: "flex",
           alignItems: "center",
-          gap: "12px",
+          gap: "16px",
           flex: "1",
         })}
       >
@@ -128,10 +128,13 @@ export function Header() {
           class={css({
             display: "flex",
             alignItems: "center",
-            gap: "4px",
+            gap: "6px",
             backgroundColor: "muted",
             borderRadius: "8px",
-            padding: "4px",
+            paddingTop: "6px",
+            paddingBottom: "6px",
+            paddingLeft: "6px",
+            paddingRight: "6px",
           })}
         >
           <button
@@ -165,7 +168,10 @@ export function Header() {
             onClick={() => goToToday()}
             title="Today"
             class={css({
-              padding: "0 12px",
+              paddingTop: "0",
+              paddingBottom: "0",
+              paddingLeft: "12px",
+              paddingRight: "12px",
               height: "28px",
               borderRadius: "6px",
               border: "none",
@@ -222,7 +228,9 @@ export function Header() {
             fontWeight: "600",
             color: "foreground",
             letterSpacing: "-0.01em",
-            minWidth: "200px",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
           })}
         >
           {dateDisplay()}
@@ -237,7 +245,10 @@ export function Header() {
           gap: "4px",
           backgroundColor: "muted",
           borderRadius: "8px",
-          padding: "4px",
+          paddingTop: "4px",
+          paddingBottom: "4px",
+          paddingLeft: "4px",
+          paddingRight: "4px",
           position: "absolute",
           left: "50%",
           transform: "translateX(-50%)",
@@ -246,11 +257,18 @@ export function Header() {
         {views.map((view) => (
           <button
             class={css({
-              padding: "6px 14px",
+              paddingTop: "6px",
+              paddingBottom: "6px",
+              paddingLeft: "12px",
+              paddingRight: "12px",
               borderRadius: "6px",
               border: "none",
               fontSize: "13px",
               fontWeight: "500",
+              height: "32px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               cursor: "pointer",
               transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
               backgroundColor:
@@ -280,7 +298,7 @@ export function Header() {
         class={css({
           display: "flex",
           alignItems: "center",
-          gap: "8px",
+          gap: "12px",
           flex: "1",
           justifyContent: "flex-end",
         })}
@@ -292,7 +310,10 @@ export function Header() {
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              padding: "6px 10px",
+              paddingTop: "6px",
+              paddingBottom: "6px",
+              paddingLeft: "10px",
+              paddingRight: "10px",
               borderRadius: "6px",
               backgroundColor: "muted",
               color: "primary",
@@ -318,14 +339,18 @@ export function Header() {
           class={css({
             display: "flex",
             alignItems: "center",
-            gap: "8px",
-            padding: "6px 12px",
+            gap: "6px",
+            paddingTop: "6px",
+            paddingBottom: "6px",
+            paddingLeft: "10px",
+            paddingRight: "10px",
             borderRadius: "6px",
             border: "none",
             backgroundColor: "muted",
             color: "mutedHover",
             fontSize: "13px",
             fontWeight: "500",
+            height: "32px",
             cursor: "pointer",
             transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
             _hover: {
@@ -337,11 +362,14 @@ export function Header() {
             },
           })}
         >
-          <Search size={16} />
+          <Search size={14} />
           <span
             class={css({
               fontSize: "11px",
-              padding: "2px 6px",
+              paddingTop: "1px",
+              paddingBottom: "1px",
+              paddingLeft: "5px",
+              paddingRight: "5px",
               backgroundColor: "hover",
               borderRadius: "4px",
               fontWeight: "600",
@@ -359,13 +387,17 @@ export function Header() {
             display: "flex",
             alignItems: "center",
             gap: "6px",
-            padding: "6px 14px",
+            paddingTop: "6px",
+            paddingBottom: "6px",
+            paddingLeft: "12px",
+            paddingRight: "12px",
             borderRadius: "6px",
             border: "none",
             backgroundColor: "primary",
             color: "background",
             fontSize: "13px",
             fontWeight: "600",
+            height: "32px",
             cursor: "pointer",
             transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
             _hover: {
@@ -376,7 +408,7 @@ export function Header() {
             },
           })}
         >
-          <Plus size={16} strokeWidth={2.5} />
+          <Plus size={14} strokeWidth={2.5} />
           New Event
         </button>
       </div>

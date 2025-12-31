@@ -171,7 +171,7 @@ export function WeekView() {
       {/* Time labels column - separate from scrollable content */}
       <div
         class={css({
-          width: "60px",
+          width: "72px",
           flexShrink: 0,
           borderRight: "1px solid",
           borderColor: "border",
@@ -181,7 +181,7 @@ export function WeekView() {
         {/* Header spacer */}
         <div
           class={css({
-            height: "80px",
+            height: "96px",
             borderBottom: "1px solid",
             borderColor: "border",
             backgroundColor: "muted",
@@ -190,14 +190,17 @@ export function WeekView() {
         {/* All day spacer */}
         <div
           class={css({
-            minHeight: "40px",
+            minHeight: "52px",
             borderBottom: "1px solid",
             borderColor: "border",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: "11px",
+            fontSize: "12px",
+            fontWeight: "500",
             color: "mutedHover",
+            paddingLeft: "8px",
+            paddingRight: "8px",
           })}
         >
           All day
@@ -208,16 +211,16 @@ export function WeekView() {
             {(hour) => (
               <div
                 class={css({
-                  height: "60px",
+                  height: "64px",
                   borderBottom: "1px solid",
                   borderColor: "border",
-                  fontSize: "11px",
+                  fontSize: "12px",
                   color: "mutedHover",
                   display: "flex",
                   alignItems: "flex-start",
                   justifyContent: "flex-end",
-                  paddingRight: "8px",
-                  paddingTop: "2px",
+                  paddingRight: "12px",
+                  paddingTop: "4px",
                 })}
               >
                 {hour === 0
@@ -243,7 +246,7 @@ export function WeekView() {
             class={css({
               display: "grid",
               gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
-              height: "80px",
+              height: "96px",
               borderBottom: "1px solid",
               borderColor: "border",
             })}
@@ -268,7 +271,7 @@ export function WeekView() {
                   <div
                     class={css({
                       textAlign: "center",
-                      padding: "12px 8px",
+                      paddingTop: "16px", paddingBottom: "16px", paddingLeft: "12px", paddingRight: "12px",
                       borderRight: "1px solid",
                       borderColor: "border",
                       backgroundColor: "muted",
@@ -283,9 +286,9 @@ export function WeekView() {
                   >
                     <div
                       class={css({
-                        fontSize: "11px",
+                        fontSize: "12px",
                         color: "mutedHover",
-                        marginBottom: "4px",
+                        marginBottom: "6px",
                         fontWeight: "600",
                         textTransform: "uppercase",
                         letterSpacing: "0.05em",
@@ -295,8 +298,8 @@ export function WeekView() {
                     </div>
                     <div
                       class={css({
-                        width: "32px",
-                        height: "32px",
+                        width: "36px",
+                        height: "36px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -324,7 +327,7 @@ export function WeekView() {
               gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
               borderBottom: "1px solid",
               borderColor: "border",
-              minHeight: "40px",
+              minHeight: "52px",
             })}
           >
             <Index each={weekDates()}>
@@ -338,10 +341,10 @@ export function WeekView() {
                     class={css({
                       borderRight: "1px solid",
                       borderColor: "border",
-                      padding: "4px",
+                      paddingTop: "8px", paddingBottom: "8px", paddingLeft: "8px", paddingRight: "8px",
                       display: "flex",
                       flexDirection: "column",
-                      gap: "2px",
+                      gap: "4px",
                     })}
                     style={{
                       "border-right": isLastColumn ? "none" : undefined,
@@ -351,8 +354,8 @@ export function WeekView() {
                       {(event) => (
                         <div
                           class={css({
-                            fontSize: "11px",
-                            padding: "2px 4px",
+                            fontSize: "12px",
+                            paddingTop: "4px", paddingBottom: "4px", paddingLeft: "6px", paddingRight: "6px",
                             borderRadius: "4px",
                             cursor: "pointer",
                             overflow: "hidden",
@@ -402,7 +405,7 @@ export function WeekView() {
                     return (
                       <div
                         class={css({
-                          height: "60px",
+                          height: "64px",
                           borderRight: "1px solid",
                           borderBottom: "1px solid",
                           borderColor: "border",
@@ -438,7 +441,7 @@ export function WeekView() {
                                 left: "2px",
                                 right: "2px",
                                 fontSize: "11px",
-                                padding: "4px 6px",
+                                paddingTop: "4px", paddingBottom: "4px", paddingLeft: "6px", paddingRight: "6px",
                                 borderRadius: "4px",
                                 cursor: "pointer",
                                 overflow: "hidden",

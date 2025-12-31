@@ -262,13 +262,13 @@ export function EventModal() {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              padding: "1rem 1.5rem",
+              paddingTop: "20px", paddingBottom: "20px", paddingLeft: "24px", paddingRight: "24px",
               borderBottom: "1px solid var(--colors-border)",
             })}
           >
             <h2
               class={css({
-                fontSize: "1.125rem",
+                fontSize: "18px",
                 fontWeight: "600",
                 color: "var(--colors-foreground)",
               })}
@@ -279,12 +279,13 @@ export function EventModal() {
               type="button"
               onClick={handleClose}
               class={css({
-                padding: "0.5rem",
-                borderRadius: "0.375rem",
+                paddingTop: "8px", paddingBottom: "8px", paddingLeft: "8px", paddingRight: "8px",
+                borderRadius: "6px",
                 backgroundColor: "transparent",
                 border: "none",
                 color: "var(--colors-foreground)",
                 cursor: "pointer",
+                transition: "all 150ms",
                 "&:hover": {
                   backgroundColor: "var(--colors-muted)",
                 },
@@ -302,12 +303,12 @@ export function EventModal() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} class={css({ padding: "1.5rem" })}>
+          <form onSubmit={handleSubmit} class={css({ paddingTop: "24px", paddingBottom: "24px", paddingLeft: "24px", paddingRight: "24px" })}>
             <div
               class={css({
                 display: "flex",
                 flexDirection: "column",
-                gap: "1rem",
+                gap: "20px",
               })}
             >
               {/* Title */}
@@ -325,10 +326,10 @@ export function EventModal() {
                 <label
                   class={css({
                     display: "block",
-                    fontSize: "0.875rem",
+                    fontSize: "14px",
                     fontWeight: "500",
                     color: "var(--colors-foreground)",
-                    marginBottom: "0.375rem",
+                    marginBottom: "8px",
                   })}
                 >
                   Calendar
@@ -342,13 +343,15 @@ export function EventModal() {
                   }}
                   class={css({
                     width: "100%",
-                    padding: "0.5rem 0.75rem",
-                    borderRadius: "0.375rem",
+                    paddingTop: "8px", paddingBottom: "8px", paddingLeft: "12px", paddingRight: "12px",
+                    borderRadius: "6px",
                     border: "1px solid var(--colors-border)",
                     backgroundColor: "var(--colors-background)",
                     color: "var(--colors-foreground)",
-                    fontSize: "0.875rem",
+                    fontSize: "14px",
+                    height: "36px",
                     outline: "none",
+                    transition: "all 150ms",
                     "&:focus": {
                       borderColor: "var(--colors-primary)",
                       boxShadow: "0 0 0 2px rgba(99, 102, 241, 0.2)",
@@ -366,8 +369,10 @@ export function EventModal() {
                 class={css({
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.5rem",
+                  gap: "10px",
                   cursor: "pointer",
+                  paddingTop: "4px",
+                  paddingBottom: "4px",
                 })}
               >
                 <input
@@ -377,14 +382,15 @@ export function EventModal() {
                     updateField("isAllDay", e.currentTarget.checked)
                   }
                   class={css({
-                    width: "1rem",
-                    height: "1rem",
+                    width: "18px",
+                    height: "18px",
                     accentColor: "var(--colors-primary)",
                   })}
                 />
                 <span
                   class={css({
-                    fontSize: "0.875rem",
+                    fontSize: "14px",
+                    fontWeight: "500",
                     color: "var(--colors-foreground)",
                   })}
                 >
@@ -397,7 +403,7 @@ export function EventModal() {
                 class={css({
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
-                  gap: "0.75rem",
+                  gap: "12px",
                 })}
               >
                 <Input
@@ -426,7 +432,7 @@ export function EventModal() {
                 class={css({
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
-                  gap: "0.75rem",
+                  gap: "12px",
                 })}
               >
                 <Input
@@ -473,10 +479,10 @@ export function EventModal() {
                 <label
                   class={css({
                     display: "block",
-                    fontSize: "0.875rem",
+                    fontSize: "14px",
                     fontWeight: "500",
                     color: "var(--colors-foreground)",
-                    marginBottom: "0.375rem",
+                    marginBottom: "8px",
                   })}
                 >
                   Description
@@ -490,14 +496,17 @@ export function EventModal() {
                   rows={3}
                   class={css({
                     width: "100%",
-                    padding: "0.5rem 0.75rem",
-                    borderRadius: "0.375rem",
+                    paddingTop: "10px", paddingBottom: "10px", paddingLeft: "12px", paddingRight: "12px",
+                    borderRadius: "6px",
                     border: "1px solid var(--colors-border)",
                     backgroundColor: "var(--colors-background)",
                     color: "var(--colors-foreground)",
-                    fontSize: "0.875rem",
+                    fontSize: "14px",
+                    lineHeight: "1.5",
+                    minHeight: "80px",
                     resize: "vertical",
                     outline: "none",
+                    transition: "all 150ms",
                     "&:focus": {
                       borderColor: "var(--colors-primary)",
                       boxShadow: "0 0 0 2px rgba(99, 102, 241, 0.2)",
@@ -511,10 +520,10 @@ export function EventModal() {
                 <label
                   class={css({
                     display: "block",
-                    fontSize: "0.875rem",
+                    fontSize: "14px",
                     fontWeight: "500",
                     color: "var(--colors-foreground)",
-                    marginBottom: "0.375rem",
+                    marginBottom: "8px",
                   })}
                 >
                   Reminder
@@ -535,13 +544,15 @@ export function EventModal() {
                   }
                   class={css({
                     width: "100%",
-                    padding: "0.5rem 0.75rem",
-                    borderRadius: "0.375rem",
+                    paddingTop: "8px", paddingBottom: "8px", paddingLeft: "12px", paddingRight: "12px",
+                    borderRadius: "6px",
                     border: "1px solid var(--colors-border)",
                     backgroundColor: "var(--colors-background)",
                     color: "var(--colors-foreground)",
-                    fontSize: "0.875rem",
+                    fontSize: "14px",
+                    height: "36px",
                     outline: "none",
+                    transition: "all 150ms",
                     "&:focus": {
                       borderColor: "var(--colors-primary)",
                       boxShadow: "0 0 0 2px rgba(99, 102, 241, 0.2)",
@@ -565,10 +576,10 @@ export function EventModal() {
                 <label
                   class={css({
                     display: "block",
-                    fontSize: "0.875rem",
+                    fontSize: "14px",
                     fontWeight: "500",
                     color: "var(--colors-foreground)",
-                    marginBottom: "0.375rem",
+                    marginBottom: "8px",
                   })}
                 >
                   Repeat
@@ -588,13 +599,15 @@ export function EventModal() {
                   }}
                   class={css({
                     width: "100%",
-                    padding: "0.5rem 0.75rem",
-                    borderRadius: "0.375rem",
+                    paddingTop: "8px", paddingBottom: "8px", paddingLeft: "12px", paddingRight: "12px",
+                    borderRadius: "6px",
                     border: "1px solid var(--colors-border)",
                     backgroundColor: "var(--colors-background)",
                     color: "var(--colors-foreground)",
-                    fontSize: "0.875rem",
+                    fontSize: "14px",
+                    height: "36px",
                     outline: "none",
+                    transition: "all 150ms",
                     "&:focus": {
                       borderColor: "var(--colors-primary)",
                       boxShadow: "0 0 0 2px rgba(99, 102, 241, 0.2)",
@@ -616,10 +629,10 @@ export function EventModal() {
                 <label
                   class={css({
                     display: "block",
-                    fontSize: "0.875rem",
+                    fontSize: "14px",
                     fontWeight: "500",
                     color: "var(--colors-foreground)",
-                    marginBottom: "0.375rem",
+                    marginBottom: "8px",
                   })}
                 >
                   Color
@@ -627,7 +640,7 @@ export function EventModal() {
                 <div
                   class={css({
                     display: "flex",
-                    gap: "0.5rem",
+                    gap: "8px",
                     flexWrap: "wrap",
                   })}
                 >
@@ -651,19 +664,23 @@ export function EventModal() {
                         onClick={() => updateField("color", color)}
                         style={{ "background-color": color }}
                         class={css({
-                          width: "2rem",
-                          height: "2rem",
-                          borderRadius: "0.375rem",
+                          width: "36px",
+                          height: "36px",
+                          borderRadius: "6px",
                           border: "2px solid",
                           borderColor:
                             formData().color === color
                               ? "white"
                               : "transparent",
                           cursor: "pointer",
+                          transition: "all 150ms",
                           boxShadow:
                             formData().color === color
                               ? "0 0 0 2px var(--colors-primary)"
                               : "none",
+                          _hover: {
+                            transform: "scale(1.1)",
+                          },
                         })}
                       />
                     )}
@@ -677,8 +694,8 @@ export function EventModal() {
               class={css({
                 display: "flex",
                 justifyContent: "space-between",
-                marginTop: "1.5rem",
-                paddingTop: "1rem",
+                marginTop: "24px",
+                paddingTop: "20px",
                 borderTop: "1px solid var(--colors-border)",
               })}
             >
@@ -696,7 +713,7 @@ export function EventModal() {
                     </Button>
                   }
                 >
-                  <div class={css({ display: "flex", gap: "0.5rem" })}>
+                  <div class={css({ display: "flex", gap: "8px" })}>
                     <Button
                       type="button"
                       variant="ghost"
@@ -720,7 +737,7 @@ export function EventModal() {
               <div
                 class={css({
                   display: "flex",
-                  gap: "0.5rem",
+                  gap: "8px",
                   marginLeft: "auto",
                 })}
               >

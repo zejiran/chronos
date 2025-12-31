@@ -62,14 +62,17 @@ export function Sidebar() {
         })}
       >
         {/* Mini Calendar */}
-        <div class={css({ padding: "16px" })}>
+        <div class={css({ paddingTop: "16px", paddingBottom: "16px", paddingLeft: "16px", paddingRight: "16px" })}>
           <MiniCalendar />
         </div>
 
         {/* Calendars Section */}
         <div
           class={css({
-            padding: "16px",
+            paddingTop: "16px",
+            paddingBottom: "16px",
+            paddingLeft: "16px",
+            paddingRight: "16px",
             borderTop: "1px solid",
             borderColor: "border",
           })}
@@ -79,7 +82,7 @@ export function Sidebar() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              marginBottom: "12px",
+              marginBottom: "14px",
             })}
           >
             <h3
@@ -104,8 +107,8 @@ export function Sidebar() {
                 backgroundColor: "transparent",
                 border: "none",
                 cursor: "pointer",
-                padding: "4px 8px",
-                borderRadius: "4px",
+                paddingTop: "6px", paddingBottom: "6px", paddingLeft: "10px", paddingRight: "10px",
+                borderRadius: "6px",
                 transition: "all 150ms",
                 _hover: {
                   backgroundColor: "hover",
@@ -122,7 +125,7 @@ export function Sidebar() {
             class={css({
               display: "flex",
               flexDirection: "column",
-              gap: "2px",
+              gap: "4px",
             })}
           >
             <For each={calendarsList()}>
@@ -132,7 +135,7 @@ export function Sidebar() {
                     display: "flex",
                     alignItems: "center",
                     gap: "10px",
-                    padding: "8px 10px",
+                    paddingTop: "10px", paddingBottom: "10px", paddingLeft: "12px", paddingRight: "12px",
                     borderRadius: "6px",
                     cursor: "pointer",
                     transition: "all 150ms",
@@ -181,7 +184,7 @@ export function Sidebar() {
                   fontSize: "13px",
                   color: "mutedHover",
                   textAlign: "center",
-                  padding: "24px 16px",
+                  paddingTop: "24px", paddingBottom: "24px", paddingLeft: "16px", paddingRight: "16px",
                 })}
               >
                 <Calendar
@@ -198,7 +201,10 @@ export function Sidebar() {
         <div
           class={css({
             flex: 1,
-            padding: "16px",
+            paddingTop: "16px",
+            paddingBottom: "16px",
+            paddingLeft: "16px",
+            paddingRight: "16px",
             borderTop: "1px solid",
             borderColor: "border",
             overflow: "auto",
@@ -221,7 +227,7 @@ export function Sidebar() {
               color: "mutedHover",
               textTransform: "uppercase",
               letterSpacing: "0.05em",
-              marginBottom: "12px",
+              marginBottom: "14px",
             })}
           >
             Upcoming
@@ -231,7 +237,7 @@ export function Sidebar() {
             <div
               class={css({
                 textAlign: "center",
-                padding: "32px 16px",
+                paddingTop: "32px", paddingBottom: "32px", paddingLeft: "16px", paddingRight: "16px",
                 color: "mutedHover",
                 fontSize: "13px",
               })}
@@ -248,7 +254,7 @@ export function Sidebar() {
             class={css({
               display: "flex",
               flexDirection: "column",
-              gap: "8px",
+              gap: "10px",
             })}
           >
             <For each={upcomingEvents()}>
@@ -276,7 +282,7 @@ function UpcomingEventCard(props: { event: CalendarEvent }) {
   return (
     <div
       class={css({
-        padding: "12px",
+        paddingTop: "12px", paddingBottom: "12px", paddingLeft: "12px", paddingRight: "12px",
         borderRadius: "8px",
         backgroundColor: "muted",
         borderLeft: "3px solid",

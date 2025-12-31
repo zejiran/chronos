@@ -13,23 +13,29 @@ export function Input(props: InputProps) {
   const containerStyles = css({
     display: 'flex',
     flexDirection: 'column',
-    gap: 'xs',
+    gap: '6px',
     width: local.fullWidth ? '100%' : 'auto',
   })
 
   const labelStyles = css({
-    fontSize: 'sm',
-    fontWeight: 'medium',
+    fontSize: '14px',
+    fontWeight: '500',
     color: 'foreground',
+    marginBottom: '2px',
   })
 
   const inputStyles = css({
-    padding: 'sm md',
-    backgroundColor: 'muted',
-    border: '1px solid {colors.border}',
-    borderRadius: 'md',
+    paddingTop: '8px',
+    paddingBottom: '8px',
+    paddingLeft: '12px',
+    paddingRight: '12px',
+    backgroundColor: 'background',
+    border: '1px solid',
+    borderColor: 'border',
+    borderRadius: '6px',
     color: 'foreground',
-    fontSize: 'base',
+    fontSize: '14px',
+    height: '36px',
     outline: 'none',
     transition: 'all 150ms',
     width: '100%',
@@ -38,7 +44,6 @@ export function Input(props: InputProps) {
     },
     _focus: {
       borderColor: 'primary',
-      boxShadow: '0 0 0 2px color-mix(in srgb, {colors.primary} 25%, transparent)',
     },
     _disabled: {
       opacity: 0.5,

@@ -99,7 +99,7 @@ export function MonthView() {
                 fontSize: "11px",
                 fontWeight: "600",
                 color: "mutedHover",
-                padding: "12px 8px",
+                paddingTop: "12px", paddingBottom: "12px", paddingLeft: "8px", paddingRight: "8px",
                 textTransform: "uppercase",
                 letterSpacing: "0.05em",
               })}
@@ -120,7 +120,7 @@ export function MonthView() {
           overflow: "hidden",
           gap: "1px",
           backgroundColor: "border",
-          padding: "1px",
+          paddingTop: "1px", paddingBottom: "1px", paddingLeft: "1px", paddingRight: "1px",
         })}
       >
         <For each={calendarDays()}>
@@ -133,7 +133,7 @@ export function MonthView() {
             return (
               <div
                 class={css({
-                  padding: "8px",
+                  paddingTop: "10px", paddingBottom: "10px", paddingLeft: "10px", paddingRight: "10px",
                   overflow: "hidden",
                   cursor: "pointer",
                   transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
@@ -150,7 +150,7 @@ export function MonthView() {
                   class={css({
                     display: "flex",
                     justifyContent: "flex-end",
-                    marginBottom: "6px",
+                    marginBottom: "8px",
                   })}
                 >
                   <span
@@ -181,7 +181,7 @@ export function MonthView() {
                   class={css({
                     display: "flex",
                     flexDirection: "column",
-                    gap: "3px",
+                    gap: "4px",
                     overflow: "hidden",
                   })}
                 >
@@ -191,7 +191,7 @@ export function MonthView() {
                         class={css({
                           fontSize: "11px",
                           fontWeight: "500",
-                          padding: "4px 6px",
+                          paddingTop: "5px", paddingBottom: "5px", paddingLeft: "7px", paddingRight: "7px",
                           borderRadius: "5px",
                           overflow: "hidden",
                           textOverflow: "ellipsis",

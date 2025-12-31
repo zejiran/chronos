@@ -152,11 +152,12 @@ button,
   user-select: none;
 }
 
-/* Base styles */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* Base styles - in reset layer so utilities can override */
+@layer reset {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+  }
 }
 
 body {
