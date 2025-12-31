@@ -1,4 +1,4 @@
-import { createMemo, For } from "solid-js";
+import { createMemo, For, Index } from "solid-js";
 import { useStore } from "@nanostores/solid";
 import { css } from "../../../styled-system/css";
 import {
@@ -85,184 +85,67 @@ export function WeekView() {
 
   const handleCellClick = (date: Temporal.PlainDate, _hour: number) => {
     selectedDate.set(date.toString());
-    void _hour; // Could open event modal with pre-filled time here
+    void _hour;
   };
 
   return (
     <div
       class={css({
         display: "flex",
-        flexDirection: "column",
         height: "100%",
         overflow: "hidden",
+        backgroundColor: "background",
       })}
     >
-      {/* Header with day names */}
+      {/* Time labels column - separate from scrollable content */}
       <div
         class={css({
-          display: "grid",
-          gridTemplateColumns: "60px repeat(7, 1fr)",
-          borderBottom: "1px solid",
-          borderColor: "border",
+          width: "60px",
           flexShrink: 0,
+          borderRight: "1px solid",
+          borderColor: "border",
+          backgroundColor: "background",
         })}
       >
-        {/* Empty corner */}
+        {/* Header spacer */}
         <div
           class={css({
-            borderRight: "1px solid",
+            height: "80px",
+            borderBottom: "1px solid",
             borderColor: "border",
             backgroundColor: "muted",
           })}
         />
-
-        <For each={weekDates()}>
-          {(date) => {
-            const isTodayDate = isToday(date);
-            const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-            const dayName = dayNames[date.dayOfWeek - 1];
-
-            return (
-              <div
-                class={css({
-                  textAlign: "center",
-                  padding: "sm",
-                  borderRight: "1px solid",
-                  borderColor: "border",
-                  backgroundColor: "muted",
-                })}
-              >
-                <div
-                  class={css({
-                    fontSize: "xs",
-                    color: "foreground",
-                    opacity: 0.5,
-                    marginBottom: "xs",
-                  })}
-                >
-                  {dayName}
-                </div>
-                <div
-                  class={css({
-                    width: "32px",
-                    height: "32px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    margin: "0 auto",
-                    fontSize: "lg",
-                    fontWeight: isTodayDate ? "bold" : "medium",
-                    borderRadius: "full",
-                    backgroundColor: isTodayDate ? "primary" : "transparent",
-                    color: isTodayDate ? "background" : "foreground",
-                  })}
-                >
-                  {date.day}
-                </div>
-              </div>
-            );
-          }}
-        </For>
-      </div>
-
-      {/* All-day events row */}
-      <div
-        class={css({
-          display: "grid",
-          gridTemplateColumns: "60px repeat(7, 1fr)",
-          borderBottom: "1px solid",
-          borderColor: "border",
-          minHeight: "40px",
-          flexShrink: 0,
-        })}
-      >
+        {/* All day spacer */}
         <div
           class={css({
-            borderRight: "1px solid",
+            minHeight: "40px",
+            borderBottom: "1px solid",
             borderColor: "border",
-            fontSize: "xs",
-            color: "foreground",
-            opacity: 0.5,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            fontSize: "11px",
+            color: "mutedHover",
           })}
         >
           All day
         </div>
-        <For each={weekDates()}>
-          {(date) => {
-            const allDayEvents = createMemo(() => getAllDayEvents(date));
-
-            return (
+        {/* Time labels */}
+        <div>
+          <For each={hours}>
+            {(hour) => (
               <div
                 class={css({
-                  borderRight: "1px solid",
-                  borderColor: "border",
-                  padding: "xs",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "2px",
-                })}
-              >
-                <For each={allDayEvents()}>
-                  {(event) => (
-                    <div
-                      class={css({
-                        fontSize: "xs",
-                        padding: "2px 4px",
-                        borderRadius: "sm",
-                        cursor: "pointer",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      })}
-                      style={{
-                        "background-color":
-                          event.color || "var(--colors-primary)",
-                        color: "white",
-                      }}
-                      onClick={(e) => handleEventClick(event, e)}
-                    >
-                      {event.title}
-                    </div>
-                  )}
-                </For>
-              </div>
-            );
-          }}
-        </For>
-      </div>
-
-      {/* Time grid */}
-      <div
-        class={css({
-          flex: 1,
-          overflow: "auto",
-        })}
-      >
-        <For each={hours}>
-          {(hour) => (
-            <div
-              class={css({
-                display: "grid",
-                gridTemplateColumns: "60px repeat(7, 1fr)",
-              })}
-            >
-              {/* Time label */}
-              <div
-                class={css({
-                  height: "48px",
-                  borderRight: "1px solid",
+                  height: "60px",
                   borderBottom: "1px solid",
                   borderColor: "border",
-                  fontSize: "xs",
-                  color: "foreground",
-                  opacity: 0.5,
+                  fontSize: "11px",
+                  color: "mutedHover",
                   display: "flex",
                   alignItems: "flex-start",
                   justifyContent: "flex-end",
-                  paddingRight: "sm",
+                  paddingRight: "8px",
                   paddingTop: "2px",
                 })}
               >
@@ -270,68 +153,245 @@ export function WeekView() {
                   ? ""
                   : formatTime(`${hour.toString().padStart(2, "0")}:00`, "12h")}
               </div>
+            )}
+          </For>
+        </div>
+      </div>
 
-              {/* Day cells */}
-              <For each={weekDates()}>
-                {(date) => {
-                  const cellEvents = createMemo(() =>
-                    getEventsForDateAndHour(date, hour),
-                  );
-                  const isTodayDate = isToday(date);
+      {/* Scrollable content area */}
+      <div
+        class={css({
+          flex: 1,
+          overflowY: "auto",
+          overflowX: "hidden",
+        })}
+      >
+        <div>
+          {/* Header with day names */}
+          <div
+            class={css({
+              display: "grid",
+              gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
+              height: "80px",
+              borderBottom: "1px solid",
+              borderColor: "border",
+            })}
+          >
+            <Index each={weekDates()}>
+              {(date, index) => {
+                const d = date();
+                const isTodayDate = isToday(d);
+                const dayNames = [
+                  "Mon",
+                  "Tue",
+                  "Wed",
+                  "Thu",
+                  "Fri",
+                  "Sat",
+                  "Sun",
+                ];
+                const dayName = dayNames[d.dayOfWeek - 1];
+                const isLastColumn = index === 6;
 
-                  return (
+                return (
+                  <div
+                    class={css({
+                      textAlign: "center",
+                      padding: "12px 8px",
+                      borderRight: "1px solid",
+                      borderColor: "border",
+                      backgroundColor: "muted",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    })}
+                    style={{
+                      "border-right": isLastColumn ? "none" : undefined,
+                    }}
+                  >
                     <div
                       class={css({
-                        height: "48px",
-                        borderRight: "1px solid",
-                        borderBottom: "1px solid",
-                        borderColor: "border",
-                        position: "relative",
-                        cursor: "pointer",
-                        backgroundColor: isTodayDate
-                          ? "rgba(137, 180, 250, 0.1)"
-                          : "transparent",
-                        _hover: {
-                          backgroundColor: "hover",
-                        },
+                        fontSize: "11px",
+                        color: "mutedHover",
+                        marginBottom: "4px",
+                        fontWeight: "600",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
                       })}
-                      onClick={() => handleCellClick(date, hour)}
                     >
-                      <For each={cellEvents()}>
-                        {(event) => (
-                          <div
-                            class={css({
-                              position: "absolute",
-                              top: "2px",
-                              left: "2px",
-                              right: "2px",
-                              fontSize: "xs",
-                              padding: "2px 4px",
-                              borderRadius: "sm",
-                              cursor: "pointer",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                              zIndex: 1,
-                            })}
-                            style={{
-                              "background-color":
-                                event.color || "var(--colors-primary)",
-                              color: "white",
-                            }}
-                            onClick={(e) => handleEventClick(event, e)}
-                          >
-                            {formatTime(event.startTime, "12h")} {event.title}
-                          </div>
-                        )}
-                      </For>
+                      {dayName}
                     </div>
-                  );
-                }}
-              </For>
-            </div>
-          )}
-        </For>
+                    <div
+                      class={css({
+                        width: "32px",
+                        height: "32px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "18px",
+                        fontWeight: isTodayDate ? "bold" : "medium",
+                        borderRadius: "full",
+                        backgroundColor: isTodayDate
+                          ? "primary"
+                          : "transparent",
+                        color: isTodayDate ? "background" : "foreground",
+                      })}
+                    >
+                      {d.day}
+                    </div>
+                  </div>
+                );
+              }}
+            </Index>
+          </div>
+
+          {/* All-day events row */}
+          <div
+            class={css({
+              display: "grid",
+              gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
+              borderBottom: "1px solid",
+              borderColor: "border",
+              minHeight: "40px",
+            })}
+          >
+            <Index each={weekDates()}>
+              {(date, index) => {
+                const d = date();
+                const allDayEvents = createMemo(() => getAllDayEvents(d));
+                const isLastColumn = index === 6;
+
+                return (
+                  <div
+                    class={css({
+                      borderRight: "1px solid",
+                      borderColor: "border",
+                      padding: "4px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "2px",
+                    })}
+                    style={{
+                      "border-right": isLastColumn ? "none" : undefined,
+                    }}
+                  >
+                    <For each={allDayEvents()}>
+                      {(event) => (
+                        <div
+                          class={css({
+                            fontSize: "11px",
+                            padding: "2px 4px",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            transition: "opacity 150ms",
+                            _hover: {
+                              opacity: 0.8,
+                            },
+                          })}
+                          style={{
+                            "background-color":
+                              event.color || "var(--colors-primary)",
+                            color: "white",
+                          }}
+                          onClick={(e) => handleEventClick(event, e)}
+                        >
+                          {event.title}
+                        </div>
+                      )}
+                    </For>
+                  </div>
+                );
+              }}
+            </Index>
+          </div>
+
+          {/* Time grid */}
+          <For each={hours}>
+            {(hour) => (
+              <div
+                class={css({
+                  display: "grid",
+                  gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
+                })}
+              >
+                <Index each={weekDates()}>
+                  {(date, index) => {
+                    const d = date();
+                    const cellEvents = createMemo(() =>
+                      getEventsForDateAndHour(d, hour),
+                    );
+                    const isTodayDate = isToday(d);
+                    const isLastColumn = index === 6;
+
+                    return (
+                      <div
+                        class={css({
+                          height: "60px",
+                          borderRight: "1px solid",
+                          borderBottom: "1px solid",
+                          borderColor: "border",
+                          position: "relative",
+                          cursor: "pointer",
+                          backgroundColor: isTodayDate
+                            ? "muted"
+                            : "background",
+                          transition: "background-color 150ms",
+                          _hover: {
+                            backgroundColor: "hover",
+                          },
+                        })}
+                        style={{
+                          "border-right": isLastColumn ? "none" : undefined,
+                        }}
+                        onClick={() => handleCellClick(d, hour)}
+                      >
+                        <For each={cellEvents()}>
+                          {(event) => (
+                            <div
+                              class={css({
+                                position: "absolute",
+                                top: "2px",
+                                left: "2px",
+                                right: "2px",
+                                fontSize: "11px",
+                                padding: "4px 6px",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                zIndex: 1,
+                                transition: "opacity 150ms",
+                                _hover: {
+                                  opacity: 0.8,
+                                },
+                              })}
+                              style={{
+                                "background-color":
+                                  event.color || "var(--colors-primary)",
+                                color: "white",
+                              }}
+                              onClick={(e) => handleEventClick(event, e)}
+                            >
+                              <strong>
+                                {formatTime(event.startTime, "12h")}
+                              </strong>{" "}
+                              {event.title}
+                            </div>
+                          )}
+                        </For>
+                      </div>
+                    );
+                  }}
+                </Index>
+              </div>
+            )}
+          </For>
+        </div>
       </div>
     </div>
   );

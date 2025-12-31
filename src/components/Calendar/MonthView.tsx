@@ -78,6 +78,7 @@ export function MonthView() {
         flexDirection: "column",
         height: "100%",
         overflow: "hidden",
+        backgroundColor: "background",
       })}
     >
       {/* Week day headers */}
@@ -85,7 +86,9 @@ export function MonthView() {
         class={css({
           display: "grid",
           gridTemplateColumns: "repeat(7, 1fr)",
-          borderBottom: "1px solid {colors.border}",
+          borderBottom: "1px solid",
+          borderColor: "border",
+          backgroundColor: "muted",
         })}
       >
         <For each={weekDays}>
@@ -93,11 +96,12 @@ export function MonthView() {
             <div
               class={css({
                 textAlign: "center",
-                fontSize: "sm",
-                fontWeight: "semibold",
+                fontSize: "11px",
+                fontWeight: "600",
                 color: "mutedHover",
-                padding: "sm",
-                backgroundColor: "muted",
+                padding: "12px 8px",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
               })}
             >
               {day}
@@ -114,6 +118,9 @@ export function MonthView() {
           gridTemplateRows: "repeat(6, 1fr)",
           flex: 1,
           overflow: "hidden",
+          gap: "1px",
+          backgroundColor: "border",
+          padding: "1px",
         })}
       >
         <For each={calendarDays()}>
@@ -126,13 +133,12 @@ export function MonthView() {
             return (
               <div
                 class={css({
-                  borderRight: "1px solid {colors.border}",
-                  borderBottom: "1px solid {colors.border}",
-                  padding: "xs",
+                  padding: "8px",
                   overflow: "hidden",
                   cursor: "pointer",
-                  transition: "background-color 100ms",
-                  backgroundColor: isSelected ? "hover" : "transparent",
+                  transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+                  backgroundColor: isSelected ? "muted" : "background",
+                  position: "relative",
                   _hover: {
                     backgroundColor: "hover",
                   },
@@ -144,19 +150,20 @@ export function MonthView() {
                   class={css({
                     display: "flex",
                     justifyContent: "flex-end",
-                    marginBottom: "xs",
+                    marginBottom: "6px",
                   })}
                 >
                   <span
                     class={css({
-                      width: "24px",
-                      height: "24px",
+                      minWidth: "28px",
+                      height: "28px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "sm",
-                      fontWeight: isTodayDate ? "bold" : "normal",
-                      borderRadius: "full",
+                      fontSize: "13px",
+                      fontWeight: isTodayDate ? "700" : "500",
+                      borderRadius: "8px",
+                      transition: "all 150ms",
                       backgroundColor: isTodayDate ? "primary" : "transparent",
                       color: isTodayDate
                         ? "background"
@@ -174,7 +181,7 @@ export function MonthView() {
                   class={css({
                     display: "flex",
                     flexDirection: "column",
-                    gap: "2px",
+                    gap: "3px",
                     overflow: "hidden",
                   })}
                 >
@@ -182,16 +189,20 @@ export function MonthView() {
                     {(event) => (
                       <div
                         class={css({
-                          fontSize: "xs",
-                          padding: "2px 4px",
-                          borderRadius: "sm",
+                          fontSize: "11px",
+                          fontWeight: "500",
+                          padding: "4px 6px",
+                          borderRadius: "5px",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
                           cursor: "pointer",
-                          transition: "opacity 100ms",
+                          transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
                           _hover: {
                             opacity: 0.8,
+                          },
+                          _active: {
+                            transform: "scale(0.98)",
                           },
                         })}
                         style={{
@@ -202,7 +213,13 @@ export function MonthView() {
                         onClick={(e) => handleEventClick(event, e)}
                       >
                         <Show when={!event.isAllDay}>
-                          <span class={css({ marginRight: "4px" })}>
+                          <span
+                            class={css({
+                              marginRight: "4px",
+                              opacity: 0.9,
+                              fontWeight: "600",
+                            })}
+                          >
                             {formatTime(event.startTime, "12h")
                               .replace(" AM", "a")
                               .replace(" PM", "p")}
@@ -215,9 +232,11 @@ export function MonthView() {
                   <Show when={dayEvents().length > 3}>
                     <div
                       class={css({
-                        fontSize: "xs",
-                        color: "primary",
-                        paddingLeft: "xs",
+                        fontSize: "11px",
+                        fontWeight: "600",
+                        color: "rgb(59, 130, 246)",
+                        paddingLeft: "6px",
+                        paddingTop: "2px",
                       })}
                     >
                       +{dayEvents().length - 3} more

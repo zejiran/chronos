@@ -12,6 +12,7 @@ import {
 import { Temporal } from "@js-temporal/polyfill";
 import { formatTime, getRelativeTimeString } from "../../lib/date";
 import type { CalendarEvent } from "../../types";
+import { Calendar, Plus, MapPin, Clock } from "lucide-solid";
 
 export function Sidebar() {
   const $sidebarVisible = useStore(sidebarVisible);
@@ -52,7 +53,8 @@ export function Sidebar() {
           width: "280px",
           height: "100%",
           backgroundColor: "sidebar",
-          borderRight: "1px solid {colors.border}",
+          borderRight: "1px solid",
+          borderColor: "border",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
@@ -60,15 +62,16 @@ export function Sidebar() {
         })}
       >
         {/* Mini Calendar */}
-        <div class={css({ padding: "md" })}>
+        <div class={css({ padding: "16px" })}>
           <MiniCalendar />
         </div>
 
         {/* Calendars Section */}
         <div
           class={css({
-            padding: "md",
-            borderTop: "1px solid {colors.border}",
+            padding: "16px",
+            borderTop: "1px solid",
+            borderColor: "border",
           })}
         >
           <div
@@ -76,30 +79,42 @@ export function Sidebar() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              marginBottom: "sm",
+              marginBottom: "12px",
             })}
           >
             <h3
               class={css({
-                fontSize: "sm",
-                fontWeight: "semibold",
-                color: "foreground",
+                fontSize: "12px",
+                fontWeight: "600",
+                color: "mutedHover",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
               })}
             >
               Calendars
             </h3>
             <button
               class={css({
-                fontSize: "xs",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                fontSize: "12px",
+                fontWeight: "500",
                 color: "primary",
                 backgroundColor: "transparent",
                 border: "none",
                 cursor: "pointer",
-                _hover: { textDecoration: "underline" },
+                padding: "4px 8px",
+                borderRadius: "4px",
+                transition: "all 150ms",
+                _hover: {
+                  backgroundColor: "hover",
+                },
               })}
               onClick={() => accountModalOpen.set(true)}
             >
-              + Add
+              <Plus size={14} />
+              Add
             </button>
           </div>
 
@@ -107,7 +122,7 @@ export function Sidebar() {
             class={css({
               display: "flex",
               flexDirection: "column",
-              gap: "xs",
+              gap: "2px",
             })}
           >
             <For each={calendarsList()}>
@@ -116,20 +131,24 @@ export function Sidebar() {
                   class={css({
                     display: "flex",
                     alignItems: "center",
-                    gap: "sm",
-                    padding: "xs sm",
-                    borderRadius: "sm",
+                    gap: "10px",
+                    padding: "8px 10px",
+                    borderRadius: "6px",
                     cursor: "pointer",
-                    _hover: { backgroundColor: "hover" },
+                    transition: "all 150ms",
+                    _hover: {
+                      backgroundColor: "hover",
+                    },
                   })}
                   onClick={() => toggleCalendarVisibility(calendar.id)}
                 >
                   <div
                     class={css({
-                      width: "12px",
-                      height: "12px",
-                      borderRadius: "sm",
+                      width: "14px",
+                      height: "14px",
+                      borderRadius: "4px",
                       flexShrink: 0,
+                      transition: "all 150ms",
                     })}
                     style={{
                       "background-color": calendar.isVisible
@@ -140,12 +159,14 @@ export function Sidebar() {
                   />
                   <span
                     class={css({
-                      fontSize: "sm",
+                      fontSize: "13px",
+                      fontWeight: "500",
                       color: calendar.isVisible ? "foreground" : "mutedHover",
                       flex: 1,
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
+                      transition: "color 150ms",
                     })}
                   >
                     {calendar.name}
@@ -157,13 +178,17 @@ export function Sidebar() {
             <Show when={calendarsList().length === 0}>
               <div
                 class={css({
-                  fontSize: "sm",
+                  fontSize: "13px",
                   color: "mutedHover",
                   textAlign: "center",
-                  padding: "md",
+                  padding: "24px 16px",
                 })}
               >
-                No calendars yet
+                <Calendar
+                  size={32}
+                  class={css({ margin: "0 auto 8px", opacity: "0.3" })}
+                />
+                <div>No calendars yet</div>
               </div>
             </Show>
           </div>
@@ -173,24 +198,30 @@ export function Sidebar() {
         <div
           class={css({
             flex: 1,
-            padding: "md",
-            borderTop: "1px solid {colors.border}",
+            padding: "16px",
+            borderTop: "1px solid",
+            borderColor: "border",
             overflow: "auto",
             "&::-webkit-scrollbar": {
               width: "6px",
             },
             "&::-webkit-scrollbar-thumb": {
               backgroundColor: "border",
-              borderRadius: "full",
+              borderRadius: "3px",
+            },
+            "&::-webkit-scrollbar-track": {
+              backgroundColor: "transparent",
             },
           })}
         >
           <h3
             class={css({
-              fontSize: "sm",
-              fontWeight: "semibold",
-              color: "foreground",
-              marginBottom: "sm",
+              fontSize: "12px",
+              fontWeight: "600",
+              color: "mutedHover",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              marginBottom: "12px",
             })}
           >
             Upcoming
@@ -200,12 +231,16 @@ export function Sidebar() {
             <div
               class={css({
                 textAlign: "center",
-                padding: "lg",
+                padding: "32px 16px",
                 color: "mutedHover",
-                fontSize: "sm",
+                fontSize: "13px",
               })}
             >
-              No upcoming events
+              <Clock
+                size={32}
+                class={css({ margin: "0 auto 8px", opacity: "0.3" })}
+              />
+              <div>No upcoming events</div>
             </div>
           </Show>
 
@@ -213,7 +248,7 @@ export function Sidebar() {
             class={css({
               display: "flex",
               flexDirection: "column",
-              gap: "sm",
+              gap: "8px",
             })}
           >
             <For each={upcomingEvents()}>
@@ -241,12 +276,12 @@ function UpcomingEventCard(props: { event: CalendarEvent }) {
   return (
     <div
       class={css({
-        padding: "sm",
-        borderRadius: "md",
+        padding: "12px",
+        borderRadius: "8px",
         backgroundColor: "muted",
         borderLeft: "3px solid",
         cursor: "pointer",
-        transition: "all 150ms",
+        transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
         _hover: {
           backgroundColor: "hover",
           transform: "translateX(2px)",
@@ -258,10 +293,10 @@ function UpcomingEventCard(props: { event: CalendarEvent }) {
     >
       <div
         class={css({
-          fontSize: "sm",
-          fontWeight: "medium",
+          fontSize: "13px",
+          fontWeight: "600",
           color: "foreground",
-          marginBottom: "xs",
+          marginBottom: "6px",
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
@@ -274,19 +309,25 @@ function UpcomingEventCard(props: { event: CalendarEvent }) {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          marginBottom: "4px",
         })}
       >
-        <span
+        <div
           class={css({
-            fontSize: "xs",
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+            fontSize: "11px",
             color: "mutedHover",
           })}
         >
+          <Clock size={12} />
           {timeDisplay()}
-        </span>
+        </div>
         <span
           class={css({
-            fontSize: "xs",
+            fontSize: "11px",
+            fontWeight: "500",
             color: "primary",
           })}
         >
@@ -296,15 +337,15 @@ function UpcomingEventCard(props: { event: CalendarEvent }) {
       <Show when={props.event.location}>
         <div
           class={css({
-            fontSize: "xs",
+            fontSize: "11px",
             color: "mutedHover",
-            marginTop: "xs",
             display: "flex",
             alignItems: "center",
-            gap: "xs",
+            gap: "4px",
           })}
         >
-          📍 {props.event.location}
+          <MapPin size={12} />
+          {props.event.location}
         </div>
       </Show>
     </div>

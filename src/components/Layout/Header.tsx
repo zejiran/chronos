@@ -18,6 +18,17 @@ import {
 import { formatDate, getMonthName } from "../../lib/date";
 import { Temporal } from "@js-temporal/polyfill";
 import type { CalendarView } from "../../types";
+import {
+  Menu,
+  ChevronLeft,
+  ChevronRight,
+  Calendar,
+  Search,
+  Plus,
+  RefreshCw,
+  PanelLeftClose,
+  PanelLeft,
+} from "lucide-solid";
 
 export function Header() {
   const $selectedDate = useStore(selectedDate);
@@ -55,17 +66,20 @@ export function Header() {
 
   return (
     <header
+      data-tauri-drag-region
       class={css({
         height: "56px",
+        backgroundColor: "sidebar",
         borderBottom: "1px solid",
         borderColor: "border",
-        backgroundColor: "background",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         padding: "0 16px",
+        paddingLeft: "80px", // Space for macOS traffic lights
         gap: "16px",
         flexShrink: 0,
+        position: "relative",
       })}
     >
       {/* Left section */}
@@ -73,63 +87,141 @@ export function Header() {
         class={css({
           display: "flex",
           alignItems: "center",
-          gap: "md",
+          gap: "12px",
+          flex: "1",
         })}
       >
         {/* Sidebar toggle */}
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
           onClick={() => toggleSidebar()}
           title={$sidebarVisible() ? "Hide sidebar" : "Show sidebar"}
-        >
-          {$sidebarVisible() ? "◀" : "▶"}
-        </Button>
-
-        {/* Logo */}
-        <div
           class={css({
             display: "flex",
             alignItems: "center",
-            gap: "sm",
+            justifyContent: "center",
+            width: "32px",
+            height: "32px",
+            borderRadius: "6px",
+            border: "none",
+            backgroundColor: "transparent",
+            color: "mutedHover",
+            cursor: "pointer",
+            transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+            _hover: {
+              backgroundColor: "hover",
+              color: "foreground",
+            },
+            _active: {
+              transform: "scale(0.95)",
+            },
           })}
         >
-          <span
-            class={css({
-              fontSize: "xl",
-              fontWeight: "bold",
-              color: "primary",
-            })}
-          >
-            Chronos
-          </span>
-        </div>
+          {$sidebarVisible() ? (
+            <PanelLeftClose size={18} />
+          ) : (
+            <PanelLeft size={18} />
+          )}
+        </button>
 
         {/* Navigation */}
         <div
           class={css({
             display: "flex",
             alignItems: "center",
-            gap: "xs",
+            gap: "4px",
+            backgroundColor: "muted",
+            borderRadius: "8px",
+            padding: "4px",
           })}
         >
-          <Button variant="ghost" size="sm" onClick={() => goToPrevious()}>
-            ←
-          </Button>
-          <Button variant="secondary" size="sm" onClick={() => goToToday()}>
+          <button
+            onClick={() => goToPrevious()}
+            title="Previous"
+            class={css({
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "28px",
+              height: "28px",
+              borderRadius: "6px",
+              border: "none",
+              backgroundColor: "transparent",
+              color: "mutedHover",
+              cursor: "pointer",
+              transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+              _hover: {
+                backgroundColor: "hover",
+                color: "foreground",
+              },
+              _active: {
+                transform: "scale(0.95)",
+              },
+            })}
+          >
+            <ChevronLeft size={18} />
+          </button>
+
+          <button
+            onClick={() => goToToday()}
+            title="Today"
+            class={css({
+              padding: "0 12px",
+              height: "28px",
+              borderRadius: "6px",
+              border: "none",
+              backgroundColor: "transparent",
+              color: "foreground",
+              fontSize: "13px",
+              fontWeight: "500",
+              cursor: "pointer",
+              transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+              whiteSpace: "nowrap",
+              _hover: {
+                backgroundColor: "hover",
+              },
+              _active: {
+                transform: "scale(0.97)",
+              },
+            })}
+          >
             Today
-          </Button>
-          <Button variant="ghost" size="sm" onClick={() => goToNext()}>
-            →
-          </Button>
+          </button>
+
+          <button
+            onClick={() => goToNext()}
+            title="Next"
+            class={css({
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "28px",
+              height: "28px",
+              borderRadius: "6px",
+              border: "none",
+              backgroundColor: "transparent",
+              color: "mutedHover",
+              cursor: "pointer",
+              transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+              _hover: {
+                backgroundColor: "hover",
+                color: "foreground",
+              },
+              _active: {
+                transform: "scale(0.95)",
+              },
+            })}
+          >
+            <ChevronRight size={18} />
+          </button>
         </div>
 
         {/* Date display */}
         <h1
           class={css({
-            fontSize: "xl",
-            fontWeight: "semibold",
+            fontSize: "18px",
+            fontWeight: "600",
             color: "foreground",
+            letterSpacing: "-0.01em",
             minWidth: "200px",
           })}
         >
@@ -142,29 +234,37 @@ export function Header() {
         class={css({
           display: "flex",
           alignItems: "center",
-          gap: "xs",
+          gap: "4px",
           backgroundColor: "muted",
-          borderRadius: "md",
-          padding: "xs",
+          borderRadius: "8px",
+          padding: "4px",
+          position: "absolute",
+          left: "50%",
+          transform: "translateX(-50%)",
         })}
       >
         {views.map((view) => (
           <button
             class={css({
-              padding: "xs md",
-              borderRadius: "sm",
+              padding: "6px 14px",
+              borderRadius: "6px",
               border: "none",
-              fontSize: "sm",
-              fontWeight: "medium",
+              fontSize: "13px",
+              fontWeight: "500",
               cursor: "pointer",
-              transition: "all 150ms",
+              transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
               backgroundColor:
-                $currentView() === view.id ? "background" : "transparent",
-              color: $currentView() === view.id ? "primary" : "foreground",
-              boxShadow: $currentView() === view.id ? "sm" : "none",
+                $currentView() === view.id ? "primary" : "transparent",
+              color:
+                $currentView() === view.id ? "background" : "mutedHover",
               _hover: {
                 backgroundColor:
-                  $currentView() === view.id ? "background" : "hover",
+                  $currentView() === view.id ? "primaryHover" : "hover",
+                color:
+                  $currentView() === view.id ? "background" : "foreground",
+              },
+              _active: {
+                transform: "scale(0.97)",
               },
             })}
             onClick={() => setView(view.id)}
@@ -180,65 +280,105 @@ export function Header() {
         class={css({
           display: "flex",
           alignItems: "center",
-          gap: "sm",
+          gap: "8px",
+          flex: "1",
+          justifyContent: "flex-end",
         })}
       >
         {/* Sync indicator */}
         <Show when={$isSyncing()}>
-          <span
+          <div
             class={css({
-              fontSize: "sm",
-              color: "muted",
               display: "flex",
               alignItems: "center",
-              gap: "xs",
+              gap: "6px",
+              padding: "6px 10px",
+              borderRadius: "6px",
+              backgroundColor: "muted",
+              color: "primary",
+              fontSize: "12px",
+              fontWeight: "500",
             })}
           >
-            <span
+            <div
               class={css({
                 animation: "spin 1s linear infinite",
               })}
             >
-              ↻
-            </span>
-            Syncing...
-          </span>
+              <RefreshCw size={14} />
+            </div>
+            Syncing
+          </div>
         </Show>
 
         {/* Search / Command palette */}
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
           onClick={() => commandPaletteOpen.set(true)}
-          title="Command palette (Cmd+K)"
+          title="Search (⌘K)"
+          class={css({
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "6px 12px",
+            borderRadius: "6px",
+            border: "none",
+            backgroundColor: "muted",
+            color: "mutedHover",
+            fontSize: "13px",
+            fontWeight: "500",
+            cursor: "pointer",
+            transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+            _hover: {
+              backgroundColor: "hover",
+              color: "foreground",
+            },
+            _active: {
+              transform: "scale(0.97)",
+            },
+          })}
         >
+          <Search size={16} />
           <span
-            class={css({ display: "flex", alignItems: "center", gap: "xs" })}
+            class={css({
+              fontSize: "11px",
+              padding: "2px 6px",
+              backgroundColor: "hover",
+              borderRadius: "4px",
+              fontWeight: "600",
+            })}
           >
-            🔍
-            <span
-              class={css({
-                fontSize: "xs",
-                color: "muted",
-                padding: "2px 6px",
-                backgroundColor: "hover",
-                borderRadius: "sm",
-              })}
-            >
-              ⌘K
-            </span>
+            ⌘K
           </span>
-        </Button>
+        </button>
 
         {/* New event button */}
-        <Button
-          variant="primary"
-          size="sm"
+        <button
           onClick={() => eventModalOpen.set(true)}
-          title="New event (Cmd+N)"
+          title="New event (⌘N)"
+          class={css({
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            padding: "6px 14px",
+            borderRadius: "6px",
+            border: "none",
+            backgroundColor: "primary",
+            color: "background",
+            fontSize: "13px",
+            fontWeight: "600",
+            cursor: "pointer",
+            transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+            _hover: {
+              backgroundColor: "primaryHover",
+            },
+            _active: {
+              transform: "translateY(0) scale(0.98)",
+            },
+          })}
         >
-          + New Event
-        </Button>
+          <Plus size={16} strokeWidth={2.5} />
+          New Event
+        </button>
       </div>
     </header>
   );
