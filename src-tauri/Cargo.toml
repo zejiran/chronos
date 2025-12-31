@@ -38,3 +38,7 @@ log = "0.4"
 env_logger = "0.11"
 icalendar = "0.16"
 urlencoding = "2"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+cocoa = "0.26"
+objc = "0.2"

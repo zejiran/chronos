@@ -6,6 +6,11 @@ mod sync;
 #[allow(dead_code)]
 mod utils;
 
+use tauri::Manager;
+#[cfg(target_os = "macos")]
+#[macro_use]
+extern crate objc;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     env_logger::init();
@@ -16,6 +21,28 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_deep_link::init())
         .setup(|app| {
+            // Hide native traffic lights on macOS
+            #[cfg(target_os = "macos")]
+            {
+                use cocoa::appkit::{NSWindow, NSWindowButton};
+                use cocoa::base::id;
+
+                let main_window = app.get_webview_window("main").unwrap();
+                let ns_window = main_window.ns_window().unwrap() as id;
+
+                unsafe {
+                    let close =
+                        ns_window.standardWindowButton_(NSWindowButton::NSWindowCloseButton);
+                    let miniaturize =
+                        ns_window.standardWindowButton_(NSWindowButton::NSWindowMiniaturizeButton);
+                    let zoom = ns_window.standardWindowButton_(NSWindowButton::NSWindowZoomButton);
+
+                    let _: () = msg_send![close, setHidden: true];
+                    let _: () = msg_send![miniaturize, setHidden: true];
+                    let _: () = msg_send![zoom, setHidden: true];
+                }
+            }
+
             // Initialize database
             let app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {

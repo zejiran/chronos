@@ -26,6 +26,7 @@ import {
   PanelLeftClose,
   PanelLeft,
 } from "lucide-solid";
+import { WindowControls } from "../shared/WindowControls";
 
 export function Header() {
   const $selectedDate = useStore(selectedDate);
@@ -64,6 +65,7 @@ export function Header() {
   return (
     <header
       data-tauri-drag-region
+      style={{ "-webkit-app-region": "drag" }}
       class={css({
         height: "56px",
         backgroundColor: "sidebar",
@@ -72,7 +74,7 @@ export function Header() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        paddingLeft: "80px", // Space for macOS traffic lights
+        paddingLeft: "16px",
         paddingRight: "20px",
         gap: "16px",
         flexShrink: 0,
@@ -81,15 +83,20 @@ export function Header() {
     >
       {/* Left section */}
       <div
+        style={{ "-webkit-app-region": "drag" }}
         class={css({
           display: "flex",
           alignItems: "center",
-          gap: "16px",
+          gap: "12px",
           flex: "1",
         })}
       >
+        {/* Window controls (macOS traffic lights replacement) */}
+        <WindowControls />
+
         {/* Sidebar toggle */}
         <button
+          style={{ "-webkit-app-region": "no-drag" }}
           onClick={() => toggleSidebar()}
           title={$sidebarVisible() ? "Hide sidebar" : "Show sidebar"}
           class={css({
@@ -122,6 +129,7 @@ export function Header() {
 
         {/* Navigation */}
         <div
+          style={{ "-webkit-app-region": "no-drag" }}
           class={css({
             display: "flex",
             alignItems: "center",
@@ -220,6 +228,7 @@ export function Header() {
 
         {/* Date display */}
         <h1
+          style={{ "-webkit-app-region": "drag" }}
           class={css({
             fontSize: "18px",
             fontWeight: "600",
@@ -236,6 +245,7 @@ export function Header() {
 
       {/* Center section - View switcher */}
       <div
+        style={{ "-webkit-app-region": "no-drag" }}
         class={css({
           display: "flex",
           alignItems: "center",
@@ -290,6 +300,7 @@ export function Header() {
 
       {/* Right section */}
       <div
+        style={{ "-webkit-app-region": "drag" }}
         class={css({
           display: "flex",
           alignItems: "center",
@@ -329,6 +340,7 @@ export function Header() {
 
         {/* Search / Command palette */}
         <button
+          style={{ "-webkit-app-region": "no-drag" }}
           onClick={() => commandPaletteOpen.set(true)}
           title="Search (⌘K)"
           class={css({
@@ -376,6 +388,7 @@ export function Header() {
 
         {/* New event button */}
         <button
+          style={{ "-webkit-app-region": "no-drag" }}
           onClick={() => eventModalOpen.set(true)}
           title="New event (⌘N)"
           class={css({
