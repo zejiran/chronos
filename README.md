@@ -178,7 +178,7 @@ VITE_MICROSOFT_CLIENT_SECRET=your-microsoft-client-secret
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+GPL-3.0 License - see [LICENSE](LICENSE) for details.
 
 ## Contributing
 

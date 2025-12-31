@@ -3,7 +3,7 @@ name = "chronos"
 version = "1.0.0"
 description = "A beautiful, performant calendar application"
 authors = ["Juan Alegría"]
-license = "MIT"
+license = "GPL-3.0"
 repository = "https://github.com/zejiran/chronos"
 edition = "2021"
 

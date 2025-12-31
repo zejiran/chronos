@@ -16,7 +16,7 @@
     "test": "vitest",
     "test:e2e": "playwright test"
   },
-  "license": "MIT",
+  "license": "GPL-3.0",
   "dependencies": {
     "@js-temporal/polyfill": "^0.4.4",
     "@kobalte/core": "^0.13.7",
