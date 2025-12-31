@@ -1,3 +1,7 @@
+// Suppress warnings from deprecated cocoa crate usage
+// TODO: Migrate to objc2 when stable APIs are available
+#![cfg_attr(target_os = "macos", allow(deprecated, unexpected_cfgs))]
+
 mod commands;
 mod db;
 mod models;
