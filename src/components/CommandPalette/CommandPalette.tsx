@@ -1,6 +1,7 @@
-import { createSignal, createEffect, For, Show } from "solid-js";
+import { createSignal, createEffect, For, Show, JSX } from "solid-js";
 import { css } from "../../../styled-system/css";
 import { useStore } from "@nanostores/solid";
+import { ArrowRight, Calendar, Eye, Zap, Settings } from "lucide-solid";
 import {
   commandPaletteOpen,
   eventModalOpen,
@@ -306,12 +307,12 @@ export function CommandPalette() {
     settings: "Settings",
   };
 
-  const categoryIcons: Record<Command["category"], string> = {
-    navigation: "→",
-    event: "📅",
-    view: "👁",
-    action: "⚡",
-    settings: "⚙",
+  const categoryIcons: Record<Command["category"], () => JSX.Element> = {
+    navigation: () => <ArrowRight size={14} />,
+    event: () => <Calendar size={14} />,
+    view: () => <Eye size={14} />,
+    action: () => <Zap size={14} />,
+    settings: () => <Settings size={14} />,
   };
 
   return (
@@ -461,7 +462,7 @@ export function CommandPalette() {
                         fontSize: "0.875rem",
                       })}
                     >
-                      {categoryIcons[command.category]}
+                      {categoryIcons[command.category]()}
                     </span>
                     <div class={css({ flex: 1, minWidth: 0 })}>
                       <div

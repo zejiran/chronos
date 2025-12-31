@@ -1,4 +1,4 @@
-import { createSignal, createEffect, For, Show } from "solid-js";
+import { createSignal, createEffect, For, Show, JSX } from "solid-js";
 import { css } from "../../../styled-system/css";
 import { useStore } from "@nanostores/solid";
 import { Button } from "../shared/Button";
@@ -11,6 +11,15 @@ import {
 } from "../../stores";
 import { updateSettings, getConfigPath } from "../../lib/tauri";
 import type { Settings, CalendarView } from "../../types";
+import {
+  Settings as SettingsIcon,
+  Palette,
+  Calendar,
+  User,
+  Bell,
+  Keyboard,
+  Wrench,
+} from "lucide-solid";
 
 type SettingsTab =
   | "general"
@@ -71,14 +80,22 @@ export function SettingsModal() {
     }
   };
 
-  const tabs: { id: SettingsTab; label: string; icon: string }[] = [
-    { id: "general", label: "General", icon: "⚙" },
-    { id: "appearance", label: "Appearance", icon: "🎨" },
-    { id: "calendars", label: "Calendars", icon: "📅" },
-    { id: "accounts", label: "Accounts", icon: "👤" },
-    { id: "notifications", label: "Notifications", icon: "🔔" },
-    { id: "shortcuts", label: "Shortcuts", icon: "⌨" },
-    { id: "advanced", label: "Advanced", icon: "🔧" },
+  const tabs: { id: SettingsTab; label: string; icon: () => JSX.Element }[] = [
+    { id: "general", label: "General", icon: () => <SettingsIcon size={16} /> },
+    {
+      id: "appearance",
+      label: "Appearance",
+      icon: () => <Palette size={16} />,
+    },
+    { id: "calendars", label: "Calendars", icon: () => <Calendar size={16} /> },
+    { id: "accounts", label: "Accounts", icon: () => <User size={16} /> },
+    {
+      id: "notifications",
+      label: "Notifications",
+      icon: () => <Bell size={16} />,
+    },
+    { id: "shortcuts", label: "Shortcuts", icon: () => <Keyboard size={16} /> },
+    { id: "advanced", label: "Advanced", icon: () => <Wrench size={16} /> },
   ];
 
   return (
@@ -193,7 +210,7 @@ export function SettingsModal() {
                       },
                     })}
                   >
-                    <span>{tab.icon}</span>
+                    <span>{tab.icon()}</span>
                     <span>{tab.label}</span>
                   </button>
                 )}

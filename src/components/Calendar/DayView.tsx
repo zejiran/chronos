@@ -1,6 +1,7 @@
 import { createMemo, For, Show } from "solid-js";
 import { useStore } from "@nanostores/solid";
 import { css } from "../../../styled-system/css";
+import { MapPin } from "lucide-solid";
 import {
   selectedDate,
   events,
@@ -278,7 +279,7 @@ export function DayView() {
                               marginTop: "xs",
                             })}
                           >
-                            📍 {event.location}
+                            <MapPin size={12} /> {event.location}
                           </div>
                         </Show>
                       </div>

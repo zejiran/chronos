@@ -1,6 +1,7 @@
 import { createMemo, For, Show } from "solid-js";
 import { useStore } from "@nanostores/solid";
 import { css } from "../../../styled-system/css";
+import { Calendar, MapPin, Video } from "lucide-solid";
 import {
   selectedDate,
   events,
@@ -97,7 +98,15 @@ export function AgendaView() {
               color: "mutedHover",
             })}
           >
-            <div class={css({ fontSize: "3xl", marginBottom: "md" })}>📅</div>
+            <div
+              class={css({
+                marginBottom: "md",
+                display: "flex",
+                justifyContent: "center",
+              })}
+            >
+              <Calendar size={48} />
+            </div>
             <div class={css({ fontSize: "lg", fontWeight: "medium" })}>
               No upcoming events
             </div>
@@ -253,7 +262,7 @@ export function AgendaView() {
                               gap: "xs",
                             })}
                           >
-                            📍 {event.location}
+                            <MapPin size={12} /> {event.location}
                           </div>
                         </Show>
                         <Show when={event.description}>
@@ -287,7 +296,7 @@ export function AgendaView() {
                             fontWeight: "medium",
                           })}
                         >
-                          🎥 Join
+                          <Video size={12} /> Join
                         </div>
                       </Show>
                     </div>
