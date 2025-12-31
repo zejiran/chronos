@@ -285,136 +285,6 @@ export function Header() {
         </h1>
       </div>
 
-      {/* Center section - View switcher dropdown */}
-      <div
-        ref={dropdownRef}
-        style={{ "-webkit-app-region": "no-drag" }}
-        class={css({
-          position: "relative",
-        })}
-      >
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setDropdownOpen(!dropdownOpen());
-          }}
-          class={css({
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            paddingTop: "6px",
-            paddingBottom: "6px",
-            paddingLeft: "12px",
-            paddingRight: "12px",
-            borderRadius: "8px",
-            border: "1px solid",
-            borderColor: "border",
-            backgroundColor: "transparent",
-            color: "foreground",
-            fontSize: "13px",
-            fontWeight: "500",
-            height: "32px",
-            cursor: "pointer",
-            transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
-            whiteSpace: "nowrap",
-            _hover: {
-              backgroundColor: "hover",
-              borderColor: "mutedHover",
-            },
-            _active: {
-              transform: "scale(0.97)",
-            },
-            "@media (max-width: 768px)": {
-              paddingLeft: "10px",
-              paddingRight: "10px",
-              fontSize: "12px",
-              height: "28px",
-            },
-          })}
-        >
-          <Show when={currentViewData()}>
-            {(data) => {
-              const Icon = data().icon;
-              return (
-                <>
-                  <Icon size={14} />
-                  <span>{data().label}</span>
-                  <ChevronDown size={14} />
-                </>
-              );
-            }}
-          </Show>
-        </button>
-
-        {/* Dropdown menu */}
-        <Show when={dropdownOpen()}>
-          <div
-            class={css({
-              position: "absolute",
-              top: "calc(100% + 4px)",
-              left: "0",
-              backgroundColor: "sidebar",
-              borderRadius: "8px",
-              border: "1px solid",
-              borderColor: "border",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-              overflow: "hidden",
-              zIndex: 1000,
-              minWidth: "160px",
-              animation: "fadeIn 150ms ease-out",
-            })}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {views.map((view) => {
-              const Icon = view.icon;
-              return (
-                <button
-                  class={css({
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    paddingTop: "10px",
-                    paddingBottom: "10px",
-                    paddingLeft: "14px",
-                    paddingRight: "14px",
-                    border: "none",
-                    backgroundColor:
-                      $currentView() === view.id ? "muted" : "transparent",
-                    color:
-                      $currentView() === view.id ? "primary" : "foreground",
-                    fontSize: "13px",
-                    fontWeight: $currentView() === view.id ? "600" : "500",
-                    cursor: "pointer",
-                    transition: "all 150ms",
-                    textAlign: "left",
-                    _hover: {
-                      backgroundColor: "hover",
-                    },
-                  })}
-                  onClick={() => {
-                    setView(view.id);
-                    setDropdownOpen(false);
-                  }}
-                >
-                  <Icon size={16} />
-                  <span style={{ flex: 1 }}>{view.label}</span>
-                  <span
-                    class={css({
-                      fontSize: "11px",
-                      color: "mutedHover",
-                      fontWeight: "600",
-                    })}
-                  >
-                    {view.shortcut}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </Show>
-      </div>
-
       {/* Right section */}
       <div
         style={{ "-webkit-app-region": "drag" }}
@@ -515,53 +385,135 @@ export function Header() {
           </span>
         </button>
 
-        {/* New event button */}
-        <button
+        {/* View switcher dropdown */}
+        <div
+          ref={dropdownRef}
           style={{ "-webkit-app-region": "no-drag" }}
-          onClick={() => eventModalOpen.set(true)}
-          title="New event (⌘N)"
           class={css({
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            paddingTop: "6px",
-            paddingBottom: "6px",
-            paddingLeft: "12px",
-            paddingRight: "12px",
-            borderRadius: "6px",
-            border: "none",
-            backgroundColor: "primary",
-            color: "background",
-            fontSize: "13px",
-            fontWeight: "600",
-            height: "32px",
-            cursor: "pointer",
-            transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
-            whiteSpace: "nowrap",
-            _hover: {
-              backgroundColor: "primaryHover",
-            },
-            _active: {
-              transform: "translateY(0) scale(0.98)",
-            },
-            "@media (max-width: 768px)": {
-              paddingLeft: "10px",
-              paddingRight: "10px",
-              fontSize: "12px",
-              height: "28px",
-            },
-            "@media (max-width: 600px)": {
-              "& span": {
-                display: "none",
-              },
-              paddingLeft: "8px",
-              paddingRight: "8px",
-            },
+            position: "relative",
           })}
         >
-          <Plus size={14} strokeWidth={2.5} />
-          <span>New Event</span>
-        </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setDropdownOpen(!dropdownOpen());
+            }}
+            class={css({
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              paddingTop: "6px",
+              paddingBottom: "6px",
+              paddingLeft: "12px",
+              paddingRight: "12px",
+              borderRadius: "8px",
+              border: "1px solid",
+              borderColor: "border",
+              backgroundColor: "transparent",
+              color: "foreground",
+              fontSize: "13px",
+              fontWeight: "500",
+              height: "32px",
+              cursor: "pointer",
+              transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+              whiteSpace: "nowrap",
+              _hover: {
+                backgroundColor: "hover",
+                borderColor: "mutedHover",
+              },
+              _active: {
+                transform: "scale(0.97)",
+              },
+              "@media (max-width: 768px)": {
+                paddingLeft: "10px",
+                paddingRight: "10px",
+                fontSize: "12px",
+                height: "28px",
+              },
+            })}
+          >
+            <Show when={currentViewData()}>
+              {(data) => {
+                const Icon = data().icon;
+                return (
+                  <>
+                    <Icon size={14} />
+                    <span>{data().label}</span>
+                    <ChevronDown size={14} />
+                  </>
+                );
+              }}
+            </Show>
+          </button>
+
+          {/* Dropdown menu */}
+          <Show when={dropdownOpen()}>
+            <div
+              class={css({
+                position: "absolute",
+                top: "calc(100% + 4px)",
+                right: "0",
+                backgroundColor: "sidebar",
+                borderRadius: "8px",
+                border: "1px solid",
+                borderColor: "border",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+                overflow: "hidden",
+                zIndex: 1000,
+                minWidth: "160px",
+                animation: "fadeIn 150ms ease-out",
+              })}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {views.map((view) => {
+                const Icon = view.icon;
+                return (
+                  <button
+                    class={css({
+                      width: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      paddingTop: "10px",
+                      paddingBottom: "10px",
+                      paddingLeft: "14px",
+                      paddingRight: "14px",
+                      border: "none",
+                      backgroundColor:
+                        $currentView() === view.id ? "muted" : "transparent",
+                      color:
+                        $currentView() === view.id ? "primary" : "foreground",
+                      fontSize: "13px",
+                      fontWeight: $currentView() === view.id ? "600" : "500",
+                      cursor: "pointer",
+                      transition: "all 150ms",
+                      textAlign: "left",
+                      _hover: {
+                        backgroundColor: "hover",
+                      },
+                    })}
+                    onClick={() => {
+                      setView(view.id);
+                      setDropdownOpen(false);
+                    }}
+                  >
+                    <Icon size={16} />
+                    <span style={{ flex: 1 }}>{view.label}</span>
+                    <span
+                      class={css({
+                        fontSize: "11px",
+                        color: "mutedHover",
+                        fontWeight: "600",
+                      })}
+                    >
+                      {view.shortcut}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </Show>
+        </div>
       </div>
     </header>
   );
