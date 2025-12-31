@@ -1,4 +1,4 @@
-import { createMemo, Show } from "solid-js";
+import { createMemo, Show, createSignal, onMount, onCleanup } from "solid-js";
 import { useStore } from "@nanostores/solid";
 import { css } from "../../../styled-system/css";
 import {
@@ -25,6 +25,12 @@ import {
   RefreshCw,
   PanelLeftClose,
   PanelLeft,
+  ChevronDown,
+  Calendar,
+  CalendarDays,
+  CalendarClock,
+  CalendarRange,
+  ListTodo,
 } from "lucide-solid";
 import { WindowControls } from "../shared/WindowControls";
 
@@ -33,6 +39,8 @@ export function Header() {
   const $currentView = useStore(currentView);
   const $sidebarVisible = useStore(sidebarVisible);
   const $isSyncing = useStore(isSyncing);
+  const [dropdownOpen, setDropdownOpen] = createSignal(false);
+  let dropdownRef: HTMLDivElement | undefined;
 
   const dateDisplay = createMemo(() => {
     const date = Temporal.PlainDate.from($selectedDate());
@@ -54,13 +62,40 @@ export function Header() {
     }
   });
 
-  const views: { id: CalendarView; label: string; shortcut: string }[] = [
-    { id: "day", label: "Day", shortcut: "D" },
-    { id: "week", label: "Week", shortcut: "W" },
-    { id: "month", label: "Month", shortcut: "M" },
-    { id: "year", label: "Year", shortcut: "Y" },
-    { id: "agenda", label: "Agenda", shortcut: "A" },
+  const views: {
+    id: CalendarView;
+    label: string;
+    shortcut: string;
+    icon: any;
+  }[] = [
+    { id: "day", label: "Day", shortcut: "D", icon: Calendar },
+    { id: "week", label: "Week", shortcut: "W", icon: CalendarDays },
+    { id: "month", label: "Month", shortcut: "M", icon: CalendarRange },
+    { id: "year", label: "Year", shortcut: "Y", icon: CalendarClock },
+    { id: "agenda", label: "Agenda", shortcut: "A", icon: ListTodo },
   ];
+
+  const currentViewData = createMemo(() => {
+    return views.find((v) => v.id === $currentView()) || views[2];
+  });
+
+  // Close dropdown when clicking outside
+  onMount(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownOpen() &&
+        dropdownRef &&
+        !dropdownRef.contains(e.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    onCleanup(() => {
+      document.removeEventListener("click", handleClickOutside);
+    });
+  });
 
   return (
     <header
@@ -250,73 +285,134 @@ export function Header() {
         </h1>
       </div>
 
-      {/* Center section - View switcher */}
+      {/* Center section - View switcher dropdown */}
       <div
+        ref={dropdownRef}
         style={{ "-webkit-app-region": "no-drag" }}
         class={css({
-          display: "flex",
-          alignItems: "center",
-          gap: "4px",
-          backgroundColor: "muted",
-          borderRadius: "8px",
-          paddingTop: "4px",
-          paddingBottom: "4px",
-          paddingLeft: "4px",
-          paddingRight: "4px",
-          position: "absolute",
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 1,
-          "@media (max-width: 1200px)": {
-            position: "static",
-            transform: "none",
-            marginLeft: "auto",
-            marginRight: "auto",
-          },
+          position: "relative",
         })}
       >
-        {views.map((view) => (
-          <button
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setDropdownOpen(!dropdownOpen());
+          }}
+          class={css({
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            paddingTop: "6px",
+            paddingBottom: "6px",
+            paddingLeft: "12px",
+            paddingRight: "12px",
+            borderRadius: "8px",
+            border: "1px solid",
+            borderColor: "border",
+            backgroundColor: "transparent",
+            color: "foreground",
+            fontSize: "13px",
+            fontWeight: "500",
+            height: "32px",
+            cursor: "pointer",
+            transition: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+            whiteSpace: "nowrap",
+            _hover: {
+              backgroundColor: "hover",
+              borderColor: "mutedHover",
+            },
+            _active: {
+              transform: "scale(0.97)",
+            },
+            "@media (max-width: 768px)": {
+              paddingLeft: "10px",
+              paddingRight: "10px",
+              fontSize: "12px",
+              height: "28px",
+            },
+          })}
+        >
+          <Show when={currentViewData()}>
+            {(data) => {
+              const Icon = data().icon;
+              return (
+                <>
+                  <Icon size={14} />
+                  <span>{data().label}</span>
+                  <ChevronDown size={14} />
+                </>
+              );
+            }}
+          </Show>
+        </button>
+
+        {/* Dropdown menu */}
+        <Show when={dropdownOpen()}>
+          <div
             class={css({
-              paddingTop: "6px",
-              paddingBottom: "6px",
-              paddingLeft: "12px",
-              paddingRight: "12px",
-              borderRadius: "6px",
-              border: "none",
-              fontSize: "13px",
-              fontWeight: "500",
-              height: "32px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
-              whiteSpace: "nowrap",
-              backgroundColor:
-                $currentView() === view.id ? "primary" : "transparent",
-              color: $currentView() === view.id ? "background" : "mutedHover",
-              _hover: {
-                backgroundColor:
-                  $currentView() === view.id ? "primaryHover" : "hover",
-                color: $currentView() === view.id ? "background" : "foreground",
-              },
-              _active: {
-                transform: "scale(0.97)",
-              },
-              "@media (max-width: 768px)": {
-                paddingLeft: "8px",
-                paddingRight: "8px",
-                fontSize: "12px",
-                height: "28px",
-              },
+              position: "absolute",
+              top: "calc(100% + 4px)",
+              left: "0",
+              backgroundColor: "sidebar",
+              borderRadius: "8px",
+              border: "1px solid",
+              borderColor: "border",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+              overflow: "hidden",
+              zIndex: 1000,
+              minWidth: "160px",
+              animation: "fadeIn 150ms ease-out",
             })}
-            onClick={() => setView(view.id)}
-            title={`${view.label} view (${view.shortcut})`}
+            onClick={(e) => e.stopPropagation()}
           >
-            {view.label}
-          </button>
-        ))}
+            {views.map((view) => {
+              const Icon = view.icon;
+              return (
+                <button
+                  class={css({
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    paddingTop: "10px",
+                    paddingBottom: "10px",
+                    paddingLeft: "14px",
+                    paddingRight: "14px",
+                    border: "none",
+                    backgroundColor:
+                      $currentView() === view.id ? "muted" : "transparent",
+                    color:
+                      $currentView() === view.id ? "primary" : "foreground",
+                    fontSize: "13px",
+                    fontWeight: $currentView() === view.id ? "600" : "500",
+                    cursor: "pointer",
+                    transition: "all 150ms",
+                    textAlign: "left",
+                    _hover: {
+                      backgroundColor: "hover",
+                    },
+                  })}
+                  onClick={() => {
+                    setView(view.id);
+                    setDropdownOpen(false);
+                  }}
+                >
+                  <Icon size={16} />
+                  <span style={{ flex: 1 }}>{view.label}</span>
+                  <span
+                    class={css({
+                      fontSize: "11px",
+                      color: "mutedHover",
+                      fontWeight: "600",
+                    })}
+                  >
+                    {view.shortcut}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </Show>
       </div>
 
       {/* Right section */}
