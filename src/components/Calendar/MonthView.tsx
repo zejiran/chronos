@@ -1,4 +1,4 @@
-import { createMemo, For, Show } from "solid-js";
+import { createMemo, For, Show, createSignal, onCleanup } from "solid-js";
 import { useStore } from "@nanostores/solid";
 import { css } from "../../../styled-system/css";
 import {
@@ -9,6 +9,7 @@ import {
   selectedEventId,
   eventSidePanelOpen,
   eventSidePanelData,
+  updateEvent,
 } from "../../stores";
 import {
   getCalendarDays,
@@ -19,6 +20,7 @@ import {
 } from "../../lib/date";
 import { Temporal } from "@js-temporal/polyfill";
 import type { CalendarEvent } from "../../types";
+import { updateEvent as updateEventApi } from "../../lib/tauri";
 
 export function MonthView() {
   const $selectedDate = useStore(selectedDate);
@@ -36,6 +38,15 @@ export function MonthView() {
   });
 
   const weekDays = getShortWeekDays("monday");
+
+  // Drag to move event state
+  const [draggedEvent, setDraggedEvent] = createSignal<CalendarEvent | null>(
+    null,
+  );
+  const [dragStartPos, setDragStartPos] = createSignal({ x: 0, y: 0 });
+  const [dragOffset, setDragOffset] = createSignal({ x: 0, y: 0 });
+  const [eventOriginalDate, setEventOriginalDate] =
+    createSignal<Temporal.PlainDate | null>(null);
 
   const getEventsForDate = (date: Temporal.PlainDate): CalendarEvent[] => {
     const visibleCalendarIds = new Set(
@@ -118,13 +129,13 @@ export function MonthView() {
     const clickedOnEvent = target.closest('[data-event-item="true"]');
 
     if (!clickedOnEvent) {
-      // Open side panel for creating a new event
+      // Open side panel for creating a new all-day event
       eventSidePanelData.set({
         startDate: date.toString(),
-        startTime: "09:00",
+        startTime: "00:00",
         endDate: date.toString(),
-        endTime: "10:00",
-        isAllDay: false,
+        endTime: "23:59",
+        isAllDay: true,
       });
       eventSidePanelOpen.set(true);
     } else {
@@ -135,9 +146,85 @@ export function MonthView() {
 
   const handleEventClick = (event: CalendarEvent, e: MouseEvent) => {
     e.stopPropagation();
-    selectedEventId.set(event.id);
-    eventModalOpen.set(true);
+    // Only open modal if not dragging
+    if (!draggedEvent()) {
+      selectedEventId.set(event.id);
+      eventModalOpen.set(true);
+    }
   };
+
+  const handleEventMouseDown = (
+    event: CalendarEvent,
+    date: Temporal.PlainDate,
+    e: MouseEvent,
+  ) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    setDraggedEvent(event);
+    setDragStartPos({ x: e.clientX, y: e.clientY });
+    setEventOriginalDate(date);
+    setDragOffset({ x: 0, y: 0 });
+  };
+
+  const handleEventMouseMove = (e: MouseEvent) => {
+    if (!draggedEvent()) return;
+
+    const deltaX = e.clientX - dragStartPos().x;
+    const deltaY = e.clientY - dragStartPos().y;
+    setDragOffset({ x: deltaX, y: deltaY });
+  };
+
+  const handleEventMouseUp = async () => {
+    if (!draggedEvent() || !eventOriginalDate()) return;
+
+    const event = draggedEvent()!;
+    const { x: deltaX, y: deltaY } = dragOffset();
+
+    try {
+      // Calculate which day cell we're over based on mouse position
+      const cellWidth = window.innerWidth / 7; // Approximate
+      const cellHeight = 100; // Approximate month view cell height
+
+      const daysDelta = Math.round(deltaX / cellWidth);
+      const weeksDelta = Math.round(deltaY / cellHeight);
+      const totalDaysDelta = daysDelta + weeksDelta * 7;
+
+      if (totalDaysDelta !== 0) {
+        const eventStart = Temporal.PlainDateTime.from(
+          event.startTime.replace("Z", ""),
+        );
+        const eventEnd = Temporal.PlainDateTime.from(
+          event.endTime.replace("Z", ""),
+        );
+
+        const newStart = eventStart.add({ days: totalDaysDelta });
+        const newEnd = eventEnd.add({ days: totalDaysDelta });
+
+        const updated = await updateEventApi(event.id, {
+          startTime: `${newStart.toString()}Z`,
+          endTime: `${newEnd.toString()}Z`,
+        });
+
+        updateEvent(event.id, updated as unknown as CalendarEvent);
+      }
+    } catch (error) {
+      console.error("Failed to update event:", error);
+    }
+
+    setDraggedEvent(null);
+    setDragOffset({ x: 0, y: 0 });
+    setEventOriginalDate(null);
+  };
+
+  // Global mouse event handlers
+  onCleanup(() => {
+    document.removeEventListener("mousemove", handleEventMouseMove);
+    document.removeEventListener("mouseup", handleEventMouseUp);
+  });
+
+  document.addEventListener("mousemove", handleEventMouseMove);
+  document.addEventListener("mouseup", handleEventMouseUp);
 
   return (
     <div
@@ -306,6 +393,9 @@ export function MonthView() {
                         date,
                       );
                       const startsOnDate = eventStartsOnDate(event, date);
+                      const isDragged = () => draggedEvent()?.id === event.id;
+                      const currentOffset = () =>
+                        isDragged() ? dragOffset() : { x: 0, y: 0 };
 
                       return (
                         <div
@@ -321,10 +411,11 @@ export function MonthView() {
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                             whiteSpace: "nowrap",
-                            cursor: "pointer",
+                            cursor: "move",
                             transition:
                               "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
                             minWidth: 0,
+                            userSelect: "none",
                             "@media (max-width: 768px)": {
                               fontSize: "9px",
                               paddingTop: "3px",
@@ -343,8 +434,20 @@ export function MonthView() {
                             "background-color":
                               event.color || "var(--colors-primary)",
                             color: "white",
+                            transform: isDragged()
+                              ? `translate(${currentOffset().x}px, ${currentOffset().y}px)`
+                              : "none",
+                            opacity: isDragged() ? 0.7 : 1,
+                            "box-shadow": isDragged()
+                              ? "0 4px 12px rgba(0,0,0,0.3)"
+                              : "none",
+                            "z-index": isDragged() ? 1000 : "auto",
+                            position: isDragged() ? "relative" : "static",
                           }}
                           onClick={(e) => handleEventClick(event, e)}
+                          onMouseDown={(e) =>
+                            handleEventMouseDown(event, date, e)
+                          }
                         >
                           <Show when={!event.isAllDay && startsOnDate}>
                             <span
