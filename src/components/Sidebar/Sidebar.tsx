@@ -5,6 +5,7 @@ import { MiniCalendar } from "./MiniCalendar";
 import {
   sidebarVisible,
   events,
+  calendars,
   accountModalOpen,
   getCalendarsList,
   toggleCalendarVisibility,
@@ -17,6 +18,7 @@ import { Calendar, Plus, MapPin, Clock } from "lucide-solid";
 export function Sidebar() {
   const $sidebarVisible = useStore(sidebarVisible);
   const $events = useStore(events);
+  const $calendars = useStore(calendars);
 
   const calendarsList = createMemo(() => getCalendarsList());
 
@@ -24,8 +26,16 @@ export function Sidebar() {
     const now = Temporal.Now.zonedDateTimeISO();
     const next24h = now.add({ hours: 24 });
 
+    const visibleCalendarIds = new Set(
+      Object.values($calendars())
+        .filter((cal) => cal.isVisible)
+        .map((cal) => cal.id),
+    );
+
     return Object.values($events())
       .filter((event) => {
+        if (!visibleCalendarIds.has(event.calendarId)) return false;
+
         try {
           const start = Temporal.Instant.from(event.startTime);
           const nowInstant = now.toInstant();
