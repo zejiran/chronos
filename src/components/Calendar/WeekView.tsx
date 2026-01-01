@@ -216,38 +216,122 @@ export function WeekView() {
     <div
       class={css({
         display: "flex",
+        flexDirection: "column",
         height: "100%",
         overflow: "hidden",
         backgroundColor: "background",
       })}
     >
-      {/* Time labels column - separate from scrollable content */}
-      <div
-        class={css({
-          width: "72px",
-          flexShrink: 0,
-          backgroundColor: "background",
-          "@media (max-width: 768px)": {
-            width: "56px",
-          },
-        })}
-        style={{
-          "border-right": "1px solid rgba(255, 255, 255, 0.05)",
-        }}
-      >
-        {/* Header spacer */}
+      {/* Fixed header section */}
+      <div class={css({ display: "flex", flexShrink: 0 })}>
+        {/* Time column header spacer */}
         <div
           class={css({
+            width: "72px",
             height: "96px",
             backgroundColor: "muted",
+            "@media (max-width: 768px)": {
+              width: "56px",
+            },
           })}
           style={{
+            "border-right": "1px solid rgba(255, 255, 255, 0.05)",
             "border-bottom": "1px solid rgba(255, 255, 255, 0.05)",
           }}
         />
-        {/* All day spacer */}
+
+        {/* Header with day names */}
+        <div
+          style={{
+            display: "grid",
+            "grid-template-columns": "repeat(7, minmax(0, 1fr))",
+            height: "96px",
+            "border-bottom": "1px solid rgba(255, 255, 255, 0.05)",
+            flex: 1,
+          }}
+        >
+          <Index each={weekDates()}>
+            {(date, index) => {
+              const d = date();
+              const isTodayDate = isToday(d);
+              const dayNames = [
+                "Mon",
+                "Tue",
+                "Wed",
+                "Thu",
+                "Fri",
+                "Sat",
+                "Sun",
+              ];
+              const dayName = dayNames[d.dayOfWeek - 1];
+              const isLastColumn = index === 6;
+
+              return (
+                <div
+                  class={css({
+                    textAlign: "center",
+                    paddingTop: "16px",
+                    paddingBottom: "16px",
+                    paddingLeft: "12px",
+                    paddingRight: "12px",
+                    backgroundColor: "muted",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  })}
+                  style={{
+                    "border-right": isLastColumn
+                      ? "none"
+                      : "1px solid rgba(255, 255, 255, 0.05)",
+                  }}
+                >
+                  <div
+                    class={css({
+                      fontSize: "12px",
+                      color: "mutedHover",
+                      marginBottom: "6px",
+                      fontWeight: "600",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                    })}
+                  >
+                    {dayName}
+                  </div>
+                  <div
+                    class={css({
+                      width: "36px",
+                      height: "36px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "18px",
+                      fontWeight: isTodayDate ? "bold" : "medium",
+                      borderRadius: "full",
+                      backgroundColor: isTodayDate ? "accent" : "transparent",
+                      color: isTodayDate ? "white" : "foreground",
+                      "@media (max-width: 768px)": {
+                        width: "28px",
+                        height: "28px",
+                        fontSize: "14px",
+                      },
+                    })}
+                  >
+                    {d.day}
+                  </div>
+                </div>
+              );
+            }}
+          </Index>
+        </div>
+      </div>
+
+      {/* All-day section */}
+      <div class={css({ display: "flex", flexShrink: 0 })}>
+        {/* All day label */}
         <div
           class={css({
+            width: "72px",
             minHeight: "52px",
             display: "flex",
             alignItems: "center",
@@ -261,19 +345,128 @@ export function WeekView() {
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
             "@media (max-width: 768px)": {
+              width: "56px",
               fontSize: "10px",
               paddingLeft: "4px",
               paddingRight: "4px",
             },
           })}
           style={{
+            "border-right": "1px solid rgba(255, 255, 255, 0.05)",
             "border-bottom": "1px solid rgba(255, 255, 255, 0.05)",
           }}
         >
           All day
         </div>
-        {/* Time labels */}
-        <div>
+
+        {/* All-day events row */}
+        <div
+          style={{
+            display: "grid",
+            "grid-template-columns": "repeat(7, minmax(0, 1fr))",
+            "border-bottom": "1px solid rgba(255, 255, 255, 0.05)",
+            "min-height": "52px",
+            flex: 1,
+          }}
+        >
+          <Index each={weekDates()}>
+            {(date, index) => {
+              const d = date();
+              const allDayEvents = createMemo(() => getAllDayEvents(d));
+              const isLastColumn = index === 6;
+
+              return (
+                <div
+                  class={css({
+                    paddingTop: "8px",
+                    paddingBottom: "8px",
+                    paddingLeft: "8px",
+                    paddingRight: "8px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                  })}
+                  style={{
+                    "border-right": isLastColumn
+                      ? "none"
+                      : "1px solid rgba(255, 255, 255, 0.05)",
+                  }}
+                >
+                  <For each={allDayEvents()}>
+                    {(event) => (
+                      <div
+                        class={css({
+                          fontSize: "12px",
+                          paddingTop: "4px",
+                          paddingBottom: "4px",
+                          paddingLeft: "6px",
+                          paddingRight: "6px",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          transition: "opacity 150ms",
+                          _hover: {
+                            opacity: 0.8,
+                          },
+                        })}
+                        style={{
+                          "background-color":
+                            event.color || "var(--colors-primary)",
+                          color: "white",
+                        }}
+                        onClick={(e) => handleEventClick(event, e)}
+                      >
+                        {event.title}
+                      </div>
+                    )}
+                  </For>
+                </div>
+              );
+            }}
+          </Index>
+        </div>
+      </div>
+
+      {/* Scrollable content area with time labels and grid */}
+      <div
+        class={css({
+          flex: 1,
+          display: "flex",
+          overflow: "hidden",
+        })}
+      >
+        {/* Time labels column - scrolls with grid */}
+        <div
+          class={css({
+            width: "72px",
+            flexShrink: 0,
+            overflowY: "auto",
+            overflowX: "hidden",
+            backgroundColor: "background",
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+            scrollbarWidth: "none",
+            "@media (max-width: 768px)": {
+              width: "56px",
+            },
+          })}
+          style={{
+            "border-right": "1px solid rgba(255, 255, 255, 0.05)",
+          }}
+          ref={(el) => {
+            // Sync scroll with grid
+            const syncScroll = (e: Event) => {
+              const gridScroll = document.querySelector(".week-grid-scroll");
+              if (gridScroll && e.target) {
+                gridScroll.scrollTop = (e.target as HTMLElement).scrollTop;
+              }
+            };
+            el.addEventListener("scroll", syncScroll);
+          }}
+        >
           <For each={hours}>
             {(hour) => (
               <div
@@ -303,169 +496,25 @@ export function WeekView() {
             )}
           </For>
         </div>
-      </div>
 
-      {/* Scrollable content area */}
-      <div
-        class={css({
-          flex: 1,
-          overflowY: "auto",
-          overflowX: "hidden",
-        })}
-      >
-        <div>
-          {/* Header with day names */}
-          <div
-            style={{
-              display: "grid",
-              "grid-template-columns": "repeat(7, minmax(0, 1fr))",
-              height: "96px",
-              "border-bottom": "1px solid rgba(255, 255, 255, 0.05)",
-            }}
-          >
-            <Index each={weekDates()}>
-              {(date, index) => {
-                const d = date();
-                const isTodayDate = isToday(d);
-                const dayNames = [
-                  "Mon",
-                  "Tue",
-                  "Wed",
-                  "Thu",
-                  "Fri",
-                  "Sat",
-                  "Sun",
-                ];
-                const dayName = dayNames[d.dayOfWeek - 1];
-                const isLastColumn = index === 6;
-
-                return (
-                  <div
-                    class={css({
-                      textAlign: "center",
-                      paddingTop: "16px",
-                      paddingBottom: "16px",
-                      paddingLeft: "12px",
-                      paddingRight: "12px",
-                      backgroundColor: "muted",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    })}
-                    style={{
-                      "border-right": isLastColumn
-                        ? "none"
-                        : "1px solid rgba(255, 255, 255, 0.05)",
-                    }}
-                  >
-                    <div
-                      class={css({
-                        fontSize: "12px",
-                        color: "mutedHover",
-                        marginBottom: "6px",
-                        fontWeight: "600",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.05em",
-                      })}
-                    >
-                      {dayName}
-                    </div>
-                    <div
-                      class={css({
-                        width: "36px",
-                        height: "36px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "18px",
-                        fontWeight: isTodayDate ? "bold" : "medium",
-                        borderRadius: "full",
-                        backgroundColor: isTodayDate ? "accent" : "transparent",
-                        color: isTodayDate ? "white" : "foreground",
-                        "@media (max-width: 768px)": {
-                          width: "28px",
-                          height: "28px",
-                          fontSize: "14px",
-                        },
-                      })}
-                    >
-                      {d.day}
-                    </div>
-                  </div>
-                );
-              }}
-            </Index>
-          </div>
-
-          {/* All-day events row */}
-          <div
-            style={{
-              display: "grid",
-              "grid-template-columns": "repeat(7, minmax(0, 1fr))",
-              "border-bottom": "1px solid rgba(255, 255, 255, 0.05)",
-              "min-height": "52px",
-            }}
-          >
-            <Index each={weekDates()}>
-              {(date, index) => {
-                const d = date();
-                const allDayEvents = createMemo(() => getAllDayEvents(d));
-                const isLastColumn = index === 6;
-
-                return (
-                  <div
-                    class={css({
-                      paddingTop: "8px",
-                      paddingBottom: "8px",
-                      paddingLeft: "8px",
-                      paddingRight: "8px",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "4px",
-                    })}
-                    style={{
-                      "border-right": isLastColumn
-                        ? "none"
-                        : "1px solid rgba(255, 255, 255, 0.05)",
-                    }}
-                  >
-                    <For each={allDayEvents()}>
-                      {(event) => (
-                        <div
-                          class={css({
-                            fontSize: "12px",
-                            paddingTop: "4px",
-                            paddingBottom: "4px",
-                            paddingLeft: "6px",
-                            paddingRight: "6px",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                            transition: "opacity 150ms",
-                            _hover: {
-                              opacity: 0.8,
-                            },
-                          })}
-                          style={{
-                            "background-color":
-                              event.color || "var(--colors-primary)",
-                            color: "white",
-                          }}
-                          onClick={(e) => handleEventClick(event, e)}
-                        >
-                          {event.title}
-                        </div>
-                      )}
-                    </For>
-                  </div>
-                );
-              }}
-            </Index>
-          </div>
-
+        {/* Grid scrollable area */}
+        <div
+          class={`week-grid-scroll ${css({
+            flex: 1,
+            overflowY: "auto",
+            overflowX: "hidden",
+          })}`}
+          ref={(el) => {
+            // Sync scroll with time labels
+            const syncScroll = (e: Event) => {
+              const timeLabels = el.previousElementSibling;
+              if (timeLabels && e.target) {
+                timeLabels.scrollTop = (e.target as HTMLElement).scrollTop;
+              }
+            };
+            el.addEventListener("scroll", syncScroll);
+          }}
+        >
           {/* Time grid container with overlaid events */}
           <div
             class={css({

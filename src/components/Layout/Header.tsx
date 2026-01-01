@@ -273,11 +273,9 @@ export function Header() {
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
-            minWidth: 0,
-            maxWidth: "300px",
+            minWidth: 300,
             "@media (max-width: 768px)": {
               fontSize: "16px",
-              maxWidth: "200px",
             },
           })}
         >
