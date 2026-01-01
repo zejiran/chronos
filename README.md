@@ -1,6 +1,10 @@
-# Chronos
+<div align="center">
+  <img src="src/assets/logo.svg" alt="Chronos Logo" width="200" height="200">
+  
+  # Chronos
 
-A modern, cross-platform calendar application built with Tauri, Solid.js, and Rust.
+  A modern, cross-platform calendar application built with Tauri, Solid.js, and Rust.
+</div>
 
 ## Features
 

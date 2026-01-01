@@ -33,6 +33,7 @@ import {
   ListTodo,
 } from "lucide-solid";
 import { WindowControls } from "../shared/WindowControls";
+import logoSvg from "../../assets/logo.svg";
 
 export function Header() {
   const $selectedDate = useStore(selectedDate);
@@ -129,6 +130,17 @@ export function Header() {
       >
         {/* Window controls (macOS traffic lights replacement) */}
         <WindowControls />
+
+        {/* Logo */}
+        <img
+          src={logoSvg}
+          alt="Chronos"
+          class={css({
+            width: "28px",
+            height: "28px",
+            marginRight: "4px",
+          })}
+        />
 
         {/* Sidebar toggle */}
         <button
