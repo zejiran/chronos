@@ -85,12 +85,14 @@ function formDataToEvent(
   data: EventFormData,
   existingEvent?: CalendarEvent,
 ): Omit<CalendarEvent, "id" | "createdAt" | "updatedAt"> {
+  // Build proper ISO 8601 timestamps with UTC timezone
   const startDateTime = data.isAllDay
-    ? `${data.startDate}T00:00:00`
-    : `${data.startDate}T${data.startTime}:00`;
+    ? `${data.startDate}T00:00:00Z`
+    : `${data.startDate}T${data.startTime}:00Z`;
+
   const endDateTime = data.isAllDay
-    ? `${data.endDate}T23:59:59`
-    : `${data.endDate}T${data.endTime}:00`;
+    ? `${data.endDate}T23:59:59Z`
+    : `${data.endDate}T${data.endTime}:00Z`;
 
   return {
     calendarId: data.calendarId,
@@ -172,10 +174,30 @@ export function EventModal() {
           endTime: eventData.endTime,
           allDay: eventData.isAllDay,
           color: eventData.color,
+          reminders: eventData.reminderMinutes
+            ? [eventData.reminderMinutes]
+            : undefined,
+          videoLink: eventData.meetingUrl,
         });
         updateEvent($selectedEvent()!.id, updated as unknown as CalendarEvent);
       } else {
-        const created = await createEvent(eventData as any);
+        const created = await createEvent({
+          calendarId: eventData.calendarId,
+          title: eventData.title,
+          description: eventData.description,
+          location: eventData.location,
+          startTime: eventData.startTime,
+          endTime: eventData.endTime,
+          allDay: eventData.isAllDay,
+          color: eventData.color,
+          reminders: eventData.reminderMinutes
+            ? [eventData.reminderMinutes]
+            : undefined,
+          recurrenceRule: eventData.recurrence
+            ? `FREQ=${eventData.recurrence.frequency.toUpperCase()};INTERVAL=${eventData.recurrence.interval}`
+            : undefined,
+          videoLink: eventData.meetingUrl,
+        });
         addEvent(created as unknown as CalendarEvent);
       }
       handleClose();
@@ -262,7 +284,10 @@ export function EventModal() {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              paddingTop: "20px", paddingBottom: "20px", paddingLeft: "24px", paddingRight: "24px",
+              paddingTop: "20px",
+              paddingBottom: "20px",
+              paddingLeft: "24px",
+              paddingRight: "24px",
               borderBottom: "1px solid var(--colors-border)",
             })}
           >
@@ -279,7 +304,10 @@ export function EventModal() {
               type="button"
               onClick={handleClose}
               class={css({
-                paddingTop: "8px", paddingBottom: "8px", paddingLeft: "8px", paddingRight: "8px",
+                paddingTop: "8px",
+                paddingBottom: "8px",
+                paddingLeft: "8px",
+                paddingRight: "8px",
                 borderRadius: "6px",
                 backgroundColor: "transparent",
                 border: "none",
@@ -303,7 +331,15 @@ export function EventModal() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} class={css({ paddingTop: "24px", paddingBottom: "24px", paddingLeft: "24px", paddingRight: "24px" })}>
+          <form
+            onSubmit={handleSubmit}
+            class={css({
+              paddingTop: "24px",
+              paddingBottom: "24px",
+              paddingLeft: "24px",
+              paddingRight: "24px",
+            })}
+          >
             <div
               class={css({
                 display: "flex",
@@ -343,7 +379,10 @@ export function EventModal() {
                   }}
                   class={css({
                     width: "100%",
-                    paddingTop: "8px", paddingBottom: "8px", paddingLeft: "12px", paddingRight: "12px",
+                    paddingTop: "8px",
+                    paddingBottom: "8px",
+                    paddingLeft: "12px",
+                    paddingRight: "12px",
                     borderRadius: "6px",
                     border: "1px solid var(--colors-border)",
                     backgroundColor: "var(--colors-background)",
@@ -496,7 +535,10 @@ export function EventModal() {
                   rows={3}
                   class={css({
                     width: "100%",
-                    paddingTop: "10px", paddingBottom: "10px", paddingLeft: "12px", paddingRight: "12px",
+                    paddingTop: "10px",
+                    paddingBottom: "10px",
+                    paddingLeft: "12px",
+                    paddingRight: "12px",
                     borderRadius: "6px",
                     border: "1px solid var(--colors-border)",
                     backgroundColor: "var(--colors-background)",
@@ -544,7 +586,10 @@ export function EventModal() {
                   }
                   class={css({
                     width: "100%",
-                    paddingTop: "8px", paddingBottom: "8px", paddingLeft: "12px", paddingRight: "12px",
+                    paddingTop: "8px",
+                    paddingBottom: "8px",
+                    paddingLeft: "12px",
+                    paddingRight: "12px",
                     borderRadius: "6px",
                     border: "1px solid var(--colors-border)",
                     backgroundColor: "var(--colors-background)",
@@ -599,7 +644,10 @@ export function EventModal() {
                   }}
                   class={css({
                     width: "100%",
-                    paddingTop: "8px", paddingBottom: "8px", paddingLeft: "12px", paddingRight: "12px",
+                    paddingTop: "8px",
+                    paddingBottom: "8px",
+                    paddingLeft: "12px",
+                    paddingRight: "12px",
                     borderRadius: "6px",
                     border: "1px solid var(--colors-border)",
                     backgroundColor: "var(--colors-background)",
